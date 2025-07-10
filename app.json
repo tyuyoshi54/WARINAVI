@@ -1,0 +1,34 @@
+{
+  "expo": {
+    "name": "ワリナビ",
+    "slug": "warinavi",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "icon": "./assets/images/icons/icon.png",
+    "userInterfaceStyle": "light",
+    "splash": {
+      "image": "./assets/images/splash/splash.png",
+      "resizeMode": "contain",
+      "backgroundColor": "#ffffff"
+    },
+    "assetBundlePatterns": [
+      "**/*"
+    ],
+    "ios": {
+      "supportsTablet": true,
+      "bundleIdentifier": "com.warinavi.app"
+    },
+    "android": {
+      "adaptiveIcon": {
+        "foregroundImage": "./assets/images/icons/adaptive-icon.png",
+        "backgroundColor": "#ffffff"
+      },
+      "package": "com.warinavi.app"
+    },
+    "web": {
+      "favicon": "./assets/images/icons/favicon.png"
+    },
+    "plugins": [],
+    "scheme": "warinavi"
+  }
+}
