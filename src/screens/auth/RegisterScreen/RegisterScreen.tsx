@@ -156,7 +156,7 @@ export const RegisterScreen = () => {
               <Input
                 label="PayPay ID（任意）"
                 placeholder="your-paypay-id"
-                value={value}
+                value={value || ''}
                 onChangeText={onChange}
                 autoCapitalize="none"
                 testID="register-paypay-input"

@@ -46,7 +46,7 @@ export const Input: React.FC<InputProps> = ({
       <View style={[
         styles.inputContainer,
         isFocused && styles.focused,
-        error && styles.error,
+        error ? styles.error : undefined,
         disabled && styles.disabled,
       ]}>
         <TextInput

@@ -4,6 +4,7 @@
 
 ## ドキュメント
 
+- [開発状況・計画](docs/STATUS.md) 👈 **最初に読んでください**
 - [設計書](docs/DESIGN.md)
 - [ディレクトリ構成](docs/DIRECTORY_STRUCTURE.md)
 - [開発規則](CLAUDE.md)

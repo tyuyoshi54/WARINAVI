@@ -1,9 +1,9 @@
 import React from 'react';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { HomeStackParamList } from './types';
+import { HomeScreen } from '../screens/home';
 
 // TODO: Import actual screens when they're created
-const HomeScreen = () => null;
 const GroupDetailScreen = () => null;
 const ExpenseInputScreen = () => null;
 const SettlementScreen = () => null;
@@ -27,7 +27,7 @@ export const HomeStackNavigator = () => {
       <Stack.Screen 
         name="HomeScreen" 
         component={HomeScreen}
-        options={{ title: 'ホーム' }}
+        options={{ headerShown: false }}
       />
       <Stack.Screen 
         name="GroupDetail" 
