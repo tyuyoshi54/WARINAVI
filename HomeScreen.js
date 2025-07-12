@@ -1,10 +1,12 @@
 import React, { useState } from 'react';
 import { StyleSheet, Text, View, TouchableOpacity, FlatList } from 'react-native';
 import AddEventModal from './AddEventModal';
+import EventDetailScreen from './EventDetailScreen';
 
 export default function HomeScreen() {
   const [events, setEvents] = useState([]);
   const [isModalVisible, setIsModalVisible] = useState(false);
+  const [selectedEvent, setSelectedEvent] = useState(null);
 
   const addEvent = () => {
     setIsModalVisible(true);
@@ -19,8 +21,26 @@ export default function HomeScreen() {
     setIsModalVisible(false);
   };
 
+  const handleEventPress = (event) => {
+    setSelectedEvent(event);
+  };
+
+  const handleBackToList = () => {
+    setSelectedEvent(null);
+  };
+
+  const handleUpdateEvent = (updatedEvent) => {
+    const updatedEvents = events.map(event => 
+      event.id === updatedEvent.id ? updatedEvent : event
+    );
+    setEvents(updatedEvents);
+  };
+
   const renderEvent = ({ item }) => (
-    <View style={styles.eventItem}>
+    <TouchableOpacity 
+      style={styles.eventItem} 
+      onPress={() => handleEventPress(item)}
+    >
       <Text style={styles.eventName}>{item.name}</Text>
       <Text style={styles.eventDate}>{item.createdAt}</Text>
       {item.members && (
@@ -28,8 +48,18 @@ export default function HomeScreen() {
           メンバー: {item.members.join(', ')}
         </Text>
       )}
-    </View>
+    </TouchableOpacity>
   );
+
+  if (selectedEvent) {
+    return (
+      <EventDetailScreen
+        event={selectedEvent}
+        onBack={handleBackToList}
+        onUpdateEvent={handleUpdateEvent}
+      />
+    );
+  }
 
   return (
     <View style={styles.container}>
