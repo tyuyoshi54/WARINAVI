@@ -6,8 +6,10 @@ import {
   TouchableOpacity,
   FlatList,
   SafeAreaView,
+  ScrollView,
 } from 'react-native';
 import AddPaymentModal from './AddPaymentModal';
+import SettlementResult from './SettlementResult';
 
 export default function EventDetailScreen({ event, onBack, onUpdateEvent }) {
   const [isPaymentModalVisible, setIsPaymentModalVisible] = useState(false);
@@ -52,42 +54,43 @@ export default function EventDetailScreen({ event, onBack, onUpdateEvent }) {
         </TouchableOpacity>
       </View>
 
-      <View style={styles.eventInfo}>
-        <Text style={styles.eventName}>{event.name}</Text>
-        <View style={styles.membersContainer}>
-          <Text style={styles.membersTitle}>メンバー:</Text>
-          <View style={styles.membersList}>
-            {event.members.map((member, index) => (
-              <View key={index} style={styles.memberChip}>
-                <Text style={styles.memberName}>{member}</Text>
-              </View>
-            ))}
+      <ScrollView style={styles.scrollContainer}>
+        <View style={styles.eventInfo}>
+          <Text style={styles.eventName}>{event.name}</Text>
+          <View style={styles.membersContainer}>
+            <Text style={styles.membersTitle}>メンバー:</Text>
+            <View style={styles.membersList}>
+              {event.members.map((member, index) => (
+                <View key={index} style={styles.memberChip}>
+                  <Text style={styles.memberName}>{member}</Text>
+                </View>
+              ))}
+            </View>
           </View>
         </View>
-      </View>
 
-      <View style={styles.paymentsSection}>
-        <View style={styles.paymentsSectionHeader}>
-          <Text style={styles.paymentsSectionTitle}>支払い記録</Text>
-          <TouchableOpacity style={styles.addPaymentButton} onPress={addPayment}>
-            <Text style={styles.addPaymentButtonText}>支払い追加</Text>
-          </TouchableOpacity>
+        <View style={styles.paymentsSection}>
+          <View style={styles.paymentsSectionHeader}>
+            <Text style={styles.paymentsSectionTitle}>支払い記録</Text>
+            <TouchableOpacity style={styles.addPaymentButton} onPress={addPayment}>
+              <Text style={styles.addPaymentButtonText}>支払い追加</Text>
+            </TouchableOpacity>
+          </View>
+
+          {payments.length === 0 ? (
+            <View style={styles.emptyPaymentsContainer}>
+              <Text style={styles.emptyPaymentsText}>まだ支払い記録がありません</Text>
+              <Text style={styles.emptyPaymentsSubText}>「支払い追加」で記録を追加しましょう</Text>
+            </View>
+          ) : (
+            <View>
+              {payments.map((payment) => renderPayment({ item: payment }))}
+            </View>
+          )}
         </View>
 
-        {payments.length === 0 ? (
-          <View style={styles.emptyPaymentsContainer}>
-            <Text style={styles.emptyPaymentsText}>まだ支払い記録がありません</Text>
-            <Text style={styles.emptyPaymentsSubText}>「支払い追加」で記録を追加しましょう</Text>
-          </View>
-        ) : (
-          <FlatList
-            data={payments}
-            renderItem={renderPayment}
-            keyExtractor={(item) => item.id}
-            style={styles.paymentsList}
-          />
-        )}
-      </View>
+        <SettlementResult members={event.members} payments={payments} />
+      </ScrollView>
 
       <AddPaymentModal
         visible={isPaymentModalVisible}
@@ -103,6 +106,10 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: '#fff',
+  },
+  scrollContainer: {
+    flex: 1,
+    paddingBottom: 20,
   },
   header: {
     paddingHorizontal: 20,
@@ -152,7 +159,6 @@ const styles = StyleSheet.create({
     color: '#333',
   },
   paymentsSection: {
-    flex: 1,
     padding: 20,
   },
   paymentsSectionHeader: {
@@ -176,9 +182,9 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
   },
   emptyPaymentsContainer: {
-    flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
+    paddingVertical: 40,
   },
   emptyPaymentsText: {
     fontSize: 16,
@@ -188,9 +194,6 @@ const styles = StyleSheet.create({
   emptyPaymentsSubText: {
     fontSize: 14,
     color: '#999',
-  },
-  paymentsList: {
-    flex: 1,
   },
   paymentItem: {
     backgroundColor: '#f9f9f9',
