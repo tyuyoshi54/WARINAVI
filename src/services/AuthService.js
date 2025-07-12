@@ -100,6 +100,16 @@ class AuthService {
     }
   }
 
+  async isProfileCompleted() {
+    try {
+      const userData = await this.getUserData();
+      return userData && userData.profileCompleted === true;
+    } catch (error) {
+      console.error('プロフィール完了状態確認エラー:', error);
+      return false;
+    }
+  }
+
   async logout() {
     try {
       await AsyncStorage.removeItem('user_data');

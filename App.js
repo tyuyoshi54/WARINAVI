@@ -2,12 +2,14 @@ import React, { useState, useEffect } from 'react';
 import { StyleSheet, Text, View } from 'react-native';
 import LoadingScreen from './src/components/screens/LoadingScreen';
 import LoginScreen from './src/components/screens/LoginScreen';
+import ProfileSetupScreen from './src/components/screens/ProfileSetupScreen';
 import HomeScreen from './src/components/screens/HomeScreen';
 import AuthService from './src/services/AuthService';
 
 export default function App() {
   const [isLoading, setIsLoading] = useState(true);
   const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [isProfileCompleted, setIsProfileCompleted] = useState(false);
   const [user, setUser] = useState(null);
 
   useEffect(() => {
@@ -23,8 +25,11 @@ export default function App() {
       
       if (loggedIn) {
         const userData = await AuthService.getUserData();
+        const profileCompleted = await AuthService.isProfileCompleted();
+        
         setUser(userData);
         setIsLoggedIn(true);
+        setIsProfileCompleted(profileCompleted);
       }
     } catch (error) {
       console.error('認証状態確認エラー:', error);
@@ -36,6 +41,12 @@ export default function App() {
   const handleLoginSuccess = (userData) => {
     setUser(userData);
     setIsLoggedIn(true);
+    setIsProfileCompleted(false);
+  };
+
+  const handleProfileComplete = (userData) => {
+    setUser(userData);
+    setIsProfileCompleted(true);
   };
 
   if (isLoading) {
@@ -44,6 +55,10 @@ export default function App() {
 
   if (!isLoggedIn) {
     return <LoginScreen onLoginSuccess={handleLoginSuccess} />;
+  }
+
+  if (!isProfileCompleted) {
+    return <ProfileSetupScreen user={user} onProfileComplete={handleProfileComplete} />;
   }
 
   return <HomeScreen user={user} />;
