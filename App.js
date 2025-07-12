@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { StyleSheet, Text, View } from 'react-native';
 import LoadingScreen from './LoadingScreen';
+import HomeScreen from './HomeScreen';
 
 export default function App() {
   const [isLoading, setIsLoading] = useState(true);
@@ -17,12 +18,7 @@ export default function App() {
     return <LoadingScreen />;
   }
 
-  return (
-    <View style={styles.container}>
-      <Text style={styles.title}>ワリナビ</Text>
-      <Text style={styles.subtitle}>割り勘精算アプリ</Text>
-    </View>
-  );
+  return <HomeScreen />;
 }
 
 const styles = StyleSheet.create({
