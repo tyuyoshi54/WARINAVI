@@ -1,30 +1,33 @@
 import React, { useState } from 'react';
-import { StyleSheet, Text, View, TouchableOpacity, FlatList, Alert } from 'react-native';
+import { StyleSheet, Text, View, TouchableOpacity, FlatList } from 'react-native';
+import AddEventModal from './AddEventModal';
 
 export default function HomeScreen() {
   const [events, setEvents] = useState([]);
+  const [isModalVisible, setIsModalVisible] = useState(false);
 
   const addEvent = () => {
-    Alert.prompt(
-      'イベントを追加',
-      'イベント名を入力してください',
-      (eventName) => {
-        if (eventName && eventName.trim()) {
-          const newEvent = {
-            id: Date.now().toString(),
-            name: eventName.trim(),
-            createdAt: new Date().toLocaleDateString(),
-          };
-          setEvents([...events, newEvent]);
-        }
-      }
-    );
+    setIsModalVisible(true);
+  };
+
+  const handleSaveEvent = (eventData) => {
+    setEvents([...events, eventData]);
+    setIsModalVisible(false);
+  };
+
+  const handleCloseModal = () => {
+    setIsModalVisible(false);
   };
 
   const renderEvent = ({ item }) => (
     <View style={styles.eventItem}>
       <Text style={styles.eventName}>{item.name}</Text>
       <Text style={styles.eventDate}>{item.createdAt}</Text>
+      {item.members && (
+        <Text style={styles.eventMembers}>
+          メンバー: {item.members.join(', ')}
+        </Text>
+      )}
     </View>
   );
 
@@ -49,6 +52,12 @@ export default function HomeScreen() {
       <TouchableOpacity style={styles.addButton} onPress={addEvent}>
         <Text style={styles.addButtonText}>＋</Text>
       </TouchableOpacity>
+
+      <AddEventModal
+        visible={isModalVisible}
+        onClose={handleCloseModal}
+        onSave={handleSaveEvent}
+      />
     </View>
   );
 }
@@ -97,6 +106,11 @@ const styles = StyleSheet.create({
   eventDate: {
     fontSize: 12,
     color: '#666',
+  },
+  eventMembers: {
+    fontSize: 14,
+    color: '#333',
+    marginTop: 5,
   },
   addButton: {
     position: 'absolute',
