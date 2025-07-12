@@ -8,8 +8,10 @@ import {
   SafeAreaView,
   ScrollView,
 } from 'react-native';
-import AddPaymentModal from './AddPaymentModal';
-import SettlementResult from './SettlementResult';
+import AddPaymentModal from '../modals/AddPaymentModal';
+import SettlementResult from '../common/SettlementResult';
+import EventInfo from '../common/EventInfo';
+import PaymentItem from '../common/PaymentItem';
 
 export default function EventDetailScreen({ event, onBack, onUpdateEvent }) {
   const [isPaymentModalVisible, setIsPaymentModalVisible] = useState(false);
@@ -35,16 +37,6 @@ export default function EventDetailScreen({ event, onBack, onUpdateEvent }) {
     setIsPaymentModalVisible(false);
   };
 
-  const renderPayment = ({ item }) => (
-    <View style={styles.paymentItem}>
-      <View style={styles.paymentHeader}>
-        <Text style={styles.paymentTitle}>{item.title}</Text>
-        <Text style={styles.paymentAmount}>¥{item.amount.toLocaleString()}</Text>
-      </View>
-      <Text style={styles.paymentPayer}>支払い者: {item.payer}</Text>
-      <Text style={styles.paymentDate}>{item.createdAt}</Text>
-    </View>
-  );
 
   return (
     <SafeAreaView style={styles.container}>
@@ -55,19 +47,7 @@ export default function EventDetailScreen({ event, onBack, onUpdateEvent }) {
       </View>
 
       <ScrollView style={styles.scrollContainer}>
-        <View style={styles.eventInfo}>
-          <Text style={styles.eventName}>{event.name}</Text>
-          <View style={styles.membersContainer}>
-            <Text style={styles.membersTitle}>メンバー:</Text>
-            <View style={styles.membersList}>
-              {event.members.map((member, index) => (
-                <View key={index} style={styles.memberChip}>
-                  <Text style={styles.memberName}>{member}</Text>
-                </View>
-              ))}
-            </View>
-          </View>
-        </View>
+        <EventInfo event={event} />
 
         <View style={styles.paymentsSection}>
           <View style={styles.paymentsSectionHeader}>
@@ -84,7 +64,9 @@ export default function EventDetailScreen({ event, onBack, onUpdateEvent }) {
             </View>
           ) : (
             <View>
-              {payments.map((payment) => renderPayment({ item: payment }))}
+              {payments.map((payment) => (
+                <PaymentItem key={payment.id} payment={payment} />
+              ))}
             </View>
           )}
         </View>
@@ -124,40 +106,6 @@ const styles = StyleSheet.create({
     fontSize: 16,
     color: '#007AFF',
   },
-  eventInfo: {
-    padding: 20,
-    borderBottomWidth: 1,
-    borderBottomColor: '#eee',
-  },
-  eventName: {
-    fontSize: 24,
-    fontWeight: 'bold',
-    marginBottom: 15,
-  },
-  membersContainer: {
-    marginTop: 10,
-  },
-  membersTitle: {
-    fontSize: 16,
-    fontWeight: 'bold',
-    marginBottom: 8,
-  },
-  membersList: {
-    flexDirection: 'row',
-    flexWrap: 'wrap',
-  },
-  memberChip: {
-    backgroundColor: '#f0f0f0',
-    paddingHorizontal: 12,
-    paddingVertical: 6,
-    borderRadius: 15,
-    marginRight: 8,
-    marginBottom: 5,
-  },
-  memberName: {
-    fontSize: 14,
-    color: '#333',
-  },
   paymentsSection: {
     padding: 20,
   },
@@ -193,37 +141,6 @@ const styles = StyleSheet.create({
   },
   emptyPaymentsSubText: {
     fontSize: 14,
-    color: '#999',
-  },
-  paymentItem: {
-    backgroundColor: '#f9f9f9',
-    padding: 15,
-    borderRadius: 8,
-    marginBottom: 10,
-  },
-  paymentHeader: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    marginBottom: 8,
-  },
-  paymentTitle: {
-    fontSize: 16,
-    fontWeight: 'bold',
-    flex: 1,
-  },
-  paymentAmount: {
-    fontSize: 16,
-    fontWeight: 'bold',
-    color: '#007AFF',
-  },
-  paymentPayer: {
-    fontSize: 14,
-    color: '#666',
-    marginBottom: 3,
-  },
-  paymentDate: {
-    fontSize: 12,
     color: '#999',
   },
 });

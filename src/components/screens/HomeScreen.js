@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { StyleSheet, Text, View, TouchableOpacity, FlatList } from 'react-native';
-import AddEventModal from './AddEventModal';
+import AddEventModal from '../modals/AddEventModal';
 import EventDetailScreen from './EventDetailScreen';
 
 export default function HomeScreen() {
