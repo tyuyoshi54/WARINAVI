@@ -1,12 +1,17 @@
-import React, { useState } from 'react';
-import { StyleSheet, Text, View, TouchableOpacity, FlatList } from 'react-native';
+import React, { useState, useRef } from 'react';
+import { StyleSheet, Text, View, TouchableOpacity, FlatList, Image, Animated, Dimensions } from 'react-native';
 import AddEventModal from '../modals/AddEventModal';
 import EventDetailScreen from './EventDetailScreen';
+import SideMenu from '../common/SideMenu';
 
-export default function HomeScreen() {
+const { width: screenWidth } = Dimensions.get('window');
+
+export default function HomeScreen({ user }) {
   const [events, setEvents] = useState([]);
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [selectedEvent, setSelectedEvent] = useState(null);
+  const [isMenuVisible, setIsMenuVisible] = useState(false);
+  const slideAnim = useRef(new Animated.Value(-screenWidth * 0.65)).current;
 
   const addEvent = () => {
     setIsModalVisible(true);
@@ -36,6 +41,25 @@ export default function HomeScreen() {
     setEvents(updatedEvents);
   };
 
+  const handleProfilePress = () => {
+    setIsMenuVisible(true);
+    Animated.timing(slideAnim, {
+      toValue: 0,
+      duration: 300,
+      useNativeDriver: true,
+    }).start();
+  };
+
+  const handleMenuClose = () => {
+    Animated.timing(slideAnim, {
+      toValue: -screenWidth * 0.65,
+      duration: 300,
+      useNativeDriver: true,
+    }).start(() => {
+      setIsMenuVisible(false);
+    });
+  };
+
   const renderEvent = ({ item }) => (
     <TouchableOpacity 
       style={styles.eventItem} 
@@ -63,7 +87,27 @@ export default function HomeScreen() {
 
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>イベント一覧</Text>
+      <View style={styles.header}>
+        <TouchableOpacity 
+          style={styles.profileButton} 
+          onPress={handleProfilePress}
+        >
+          {user?.pictureUrl ? (
+            <Image 
+              source={{ uri: user.pictureUrl }} 
+              style={styles.profileImage} 
+            />
+          ) : (
+            <View style={styles.defaultProfileImage}>
+              <Text style={styles.defaultProfileText}>
+                {user?.displayName?.charAt(0) || 'U'}
+              </Text>
+            </View>
+          )}
+        </TouchableOpacity>
+        <Text style={styles.title}>イベント一覧</Text>
+        <View style={styles.headerSpacer} />
+      </View>
       
       {events.length === 0 ? (
         <View style={styles.emptyContainer}>
@@ -88,6 +132,13 @@ export default function HomeScreen() {
         onClose={handleCloseModal}
         onSave={handleSaveEvent}
       />
+
+      <SideMenu
+        isVisible={isMenuVisible}
+        onClose={handleMenuClose}
+        user={user}
+        slideAnim={slideAnim}
+      />
     </View>
   );
 }
@@ -99,11 +150,45 @@ const styles = StyleSheet.create({
     paddingTop: 60,
     paddingHorizontal: 20,
   },
+  header: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    marginBottom: 20,
+  },
+  profileButton: {
+    padding: 4,
+  },
+  profileImage: {
+    width: 40,
+    height: 40,
+    borderRadius: 20,
+    borderWidth: 2,
+    borderColor: '#3498db',
+  },
+  defaultProfileImage: {
+    width: 40,
+    height: 40,
+    borderRadius: 20,
+    backgroundColor: '#3498db',
+    justifyContent: 'center',
+    alignItems: 'center',
+    borderWidth: 2,
+    borderColor: '#2980b9',
+  },
+  defaultProfileText: {
+    fontSize: 16,
+    fontWeight: 'bold',
+    color: '#ffffff',
+  },
   title: {
     fontSize: 24,
     fontWeight: 'bold',
-    marginBottom: 20,
     textAlign: 'center',
+    flex: 1,
+  },
+  headerSpacer: {
+    width: 48,
   },
   emptyContainer: {
     flex: 1,
