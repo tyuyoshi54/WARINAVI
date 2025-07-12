@@ -18,11 +18,15 @@ export default function SideMenu({
   isVisible, 
   onClose, 
   user, 
-  slideAnim 
+  slideAnim,
+  onNavigateToMyPage 
 }) {
   const handleProfilePress = () => {
     console.log('プロフィール押下');
     onClose();
+    if (onNavigateToMyPage) {
+      onNavigateToMyPage();
+    }
   };
 
   const handleSettingsPress = () => {

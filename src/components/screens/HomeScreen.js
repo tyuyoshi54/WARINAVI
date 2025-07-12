@@ -6,7 +6,7 @@ import SideMenu from '../common/SideMenu';
 
 const { width: screenWidth } = Dimensions.get('window');
 
-export default function HomeScreen({ user }) {
+export default function HomeScreen({ user, onNavigateToMyPage }) {
   const [events, setEvents] = useState([]);
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [selectedEvent, setSelectedEvent] = useState(null);
@@ -138,6 +138,7 @@ export default function HomeScreen({ user }) {
         onClose={handleMenuClose}
         user={user}
         slideAnim={slideAnim}
+        onNavigateToMyPage={onNavigateToMyPage}
       />
     </View>
   );

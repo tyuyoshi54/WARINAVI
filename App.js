@@ -4,12 +4,14 @@ import LoadingScreen from './src/components/screens/LoadingScreen';
 import LoginScreen from './src/components/screens/LoginScreen';
 import ProfileSetupScreen from './src/components/screens/ProfileSetupScreen';
 import HomeScreen from './src/components/screens/HomeScreen';
+import MyPageScreen from './src/components/screens/MyPageScreen';
 import AuthService from './src/services/AuthService';
 
 export default function App() {
   const [isLoading, setIsLoading] = useState(true);
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [isProfileCompleted, setIsProfileCompleted] = useState(false);
+  const [currentScreen, setCurrentScreen] = useState('home');
   const [user, setUser] = useState(null);
 
   useEffect(() => {
@@ -49,6 +51,18 @@ export default function App() {
     setIsProfileCompleted(true);
   };
 
+  const handleNavigateToMyPage = () => {
+    setCurrentScreen('mypage');
+  };
+
+  const handleBackToHome = () => {
+    setCurrentScreen('home');
+  };
+
+  const handleUpdateUser = (updatedUser) => {
+    setUser(updatedUser);
+  };
+
   if (isLoading) {
     return <LoadingScreen />;
   }
@@ -61,7 +75,22 @@ export default function App() {
     return <ProfileSetupScreen user={user} onProfileComplete={handleProfileComplete} />;
   }
 
-  return <HomeScreen user={user} />;
+  if (currentScreen === 'mypage') {
+    return (
+      <MyPageScreen 
+        user={user} 
+        onBack={handleBackToHome}
+        onUpdateUser={handleUpdateUser}
+      />
+    );
+  }
+
+  return (
+    <HomeScreen 
+      user={user} 
+      onNavigateToMyPage={handleNavigateToMyPage}
+    />
+  );
 }
 
 const styles = StyleSheet.create({
