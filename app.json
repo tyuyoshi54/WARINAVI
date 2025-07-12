@@ -18,6 +18,9 @@
     },
     "assetBundlePatterns": [
       "**/*"
-    ]
+    ],
+    "ios": {
+      "usesAppleSignIn": true
+    }
   }
 }
