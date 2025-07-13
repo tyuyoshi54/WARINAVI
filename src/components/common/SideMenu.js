@@ -19,7 +19,8 @@ export default function SideMenu({
   onClose, 
   user, 
   slideAnim,
-  onNavigateToMyPage 
+  onNavigateToMyPage,
+  onNavigateToSettings 
 }) {
   const handleProfilePress = () => {
     console.log('プロフィール押下');
@@ -32,6 +33,9 @@ export default function SideMenu({
   const handleSettingsPress = () => {
     console.log('設定押下');
     onClose();
+    if (onNavigateToSettings) {
+      onNavigateToSettings();
+    }
   };
 
   const handleLogoutPress = () => {

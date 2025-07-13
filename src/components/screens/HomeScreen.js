@@ -3,6 +3,7 @@ import { StyleSheet, Text, View, TouchableOpacity, FlatList, Image, Animated, Di
 import AddEventModal from '../modals/AddEventModal';
 import EventDetailScreen from './EventDetailScreen';
 import SideMenu from '../common/SideMenu';
+import SettingsScreen from './SettingsScreen';
 
 const { width: screenWidth } = Dimensions.get('window');
 
@@ -11,6 +12,7 @@ export default function HomeScreen({ user, onNavigateToMyPage }) {
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [selectedEvent, setSelectedEvent] = useState(null);
   const [isMenuVisible, setIsMenuVisible] = useState(false);
+  const [isSettingsVisible, setIsSettingsVisible] = useState(false);
   const slideAnim = useRef(new Animated.Value(-screenWidth * 0.65)).current;
 
   const addEvent = () => {
@@ -60,6 +62,14 @@ export default function HomeScreen({ user, onNavigateToMyPage }) {
     });
   };
 
+  const handleNavigateToSettings = () => {
+    setIsSettingsVisible(true);
+  };
+
+  const handleSettingsBack = () => {
+    setIsSettingsVisible(false);
+  };
+
   const renderEvent = ({ item }) => (
     <TouchableOpacity 
       style={styles.eventItem} 
@@ -81,6 +91,14 @@ export default function HomeScreen({ user, onNavigateToMyPage }) {
         event={selectedEvent}
         onBack={handleBackToList}
         onUpdateEvent={handleUpdateEvent}
+      />
+    );
+  }
+
+  if (isSettingsVisible) {
+    return (
+      <SettingsScreen
+        onNavigateBack={handleSettingsBack}
       />
     );
   }
@@ -139,6 +157,7 @@ export default function HomeScreen({ user, onNavigateToMyPage }) {
         user={user}
         slideAnim={slideAnim}
         onNavigateToMyPage={onNavigateToMyPage}
+        onNavigateToSettings={handleNavigateToSettings}
       />
     </View>
   );
