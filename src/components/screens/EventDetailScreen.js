@@ -7,15 +7,20 @@ import {
   FlatList,
   SafeAreaView,
   ScrollView,
+  Share,
+  Alert,
 } from 'react-native';
 import AddPaymentModal from '../modals/AddPaymentModal';
+import InviteFriendsModal from '../modals/InviteFriendsModal';
 import SettlementResult from '../common/SettlementResult';
 import EventInfo from '../common/EventInfo';
 import PaymentItem from '../common/PaymentItem';
+import EventShareService from '../../services/EventShareService';
 
 export default function EventDetailScreen({ event, onBack, onUpdateEvent, onNavigateToPayPay }) {
   const [isPaymentModalVisible, setIsPaymentModalVisible] = useState(false);
   const [payments, setPayments] = useState(event.payments || []);
+  const [isInviteModalVisible, setIsInviteModalVisible] = useState(false);
 
   const addPayment = () => {
     setIsPaymentModalVisible(true);
@@ -37,6 +42,32 @@ export default function EventDetailScreen({ event, onBack, onUpdateEvent, onNavi
     setIsPaymentModalVisible(false);
   };
 
+  const handleInviteFriends = () => {
+    setIsInviteModalVisible(true);
+  };
+
+  const handleShareEvent = async () => {
+    try {
+      // 共有リンクを生成
+      const shareLink = await EventShareService.generateShareLink(event);
+      
+      await Share.share({
+        message: `イベント「${event.name}」に参加しませんか？\n\nイベント詳細を確認して参加できます：\n${shareLink}`,
+        title: 'イベント招待',
+        url: shareLink,
+      });
+    } catch (error) {
+      console.error('シェアエラー:', error);
+      Alert.alert('エラー', 'イベントの共有に失敗しました');
+    }
+  };
+
+  const handleInviteFriendsComplete = (friendIds, eventData) => {
+    console.log('友達招待:', friendIds, 'イベント:', eventData.name);
+    // TODO: 実際の招待処理を実装
+    alert(`${friendIds.length}人の友達に招待を送信しました！`);
+  };
+
 
   return (
     <SafeAreaView style={styles.container}>
@@ -44,6 +75,15 @@ export default function EventDetailScreen({ event, onBack, onUpdateEvent, onNavi
         <TouchableOpacity style={styles.backButton} onPress={onBack}>
           <Text style={styles.backButtonText}>← 戻る</Text>
         </TouchableOpacity>
+        
+        <View style={styles.headerButtons}>
+          <TouchableOpacity style={styles.headerButton} onPress={handleInviteFriends}>
+            <Text style={styles.headerButtonText}>招待</Text>
+          </TouchableOpacity>
+          <TouchableOpacity style={styles.headerButton} onPress={handleShareEvent}>
+            <Text style={styles.headerButtonText}>共有</Text>
+          </TouchableOpacity>
+        </View>
       </View>
 
       <ScrollView style={styles.scrollContainer}>
@@ -84,6 +124,13 @@ export default function EventDetailScreen({ event, onBack, onUpdateEvent, onNavi
         onSave={handleSavePayment}
         members={event.members}
       />
+
+      <InviteFriendsModal
+        visible={isInviteModalVisible}
+        onClose={() => setIsInviteModalVisible(false)}
+        event={event}
+        onInviteFriends={handleInviteFriendsComplete}
+      />
     </SafeAreaView>
   );
 }
@@ -98,10 +145,28 @@ const styles = StyleSheet.create({
     paddingBottom: 20,
   },
   header: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
     paddingHorizontal: 20,
     paddingVertical: 10,
     borderBottomWidth: 1,
     borderBottomColor: '#eee',
+  },
+  headerButtons: {
+    flexDirection: 'row',
+    gap: 12,
+  },
+  headerButton: {
+    backgroundColor: '#007AFF',
+    paddingHorizontal: 12,
+    paddingVertical: 6,
+    borderRadius: 6,
+  },
+  headerButtonText: {
+    color: '#fff',
+    fontSize: 14,
+    fontWeight: '500',
   },
   backButton: {
     paddingVertical: 8,
