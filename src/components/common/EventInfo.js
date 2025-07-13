@@ -1,10 +1,32 @@
 import React from 'react';
 import { StyleSheet, Text, View } from 'react-native';
+import ProfileAvatar from '../ui/ProfileAvatar';
 
 export default function EventInfo({ event }) {
   return (
     <View style={styles.container}>
-      <Text style={styles.eventName}>{event.name}</Text>
+      <View style={styles.titleContainer}>
+        <Text style={styles.eventName}>{event.name}</Text>
+        <View style={styles.participantsContainer}>
+          {event.hostUser && (
+            <ProfileAvatar
+              user={event.hostUser}
+              size="sm"
+              style={styles.participantAvatar}
+            />
+          )}
+          {event.participants && event.participants.length > 0 && 
+            event.participants.map((participant, index) => (
+              <ProfileAvatar
+                key={participant.id || index}
+                user={participant}
+                size="sm"
+                style={styles.participantAvatar}
+              />
+            ))
+          }
+        </View>
+      </View>
       <View style={styles.membersContainer}>
         <Text style={styles.membersTitle}>メンバー:</Text>
         <View style={styles.membersList}>
@@ -25,10 +47,23 @@ const styles = StyleSheet.create({
     borderBottomWidth: 1,
     borderBottomColor: '#eee',
   },
+  titleContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    marginBottom: 15,
+  },
   eventName: {
     fontSize: 24,
     fontWeight: 'bold',
-    marginBottom: 15,
+    flex: 1,
+  },
+  participantsContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  participantAvatar: {
+    marginLeft: 8,
   },
   membersContainer: {
     marginTop: 10,

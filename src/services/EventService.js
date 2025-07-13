@@ -1,4 +1,5 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import AuthService from './AuthService';
 
 const EVENT_STORAGE_KEY = 'events';
 
@@ -28,11 +29,15 @@ class EventService {
   async addEvent(newEvent) {
     try {
       const events = await this.loadEvents();
+      const currentUser = await AuthService.getUserData();
+      
       const eventWithId = {
         ...newEvent,
         id: Date.now().toString(),
         createdAt: new Date().toISOString(),
-        payments: newEvent.payments || []
+        payments: newEvent.payments || [],
+        hostUser: currentUser,
+        participants: []
       };
       events.push(eventWithId);
       await this.saveEvents(events);

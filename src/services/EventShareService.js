@@ -1,4 +1,5 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import AuthService from './AuthService';
 
 const SHARED_EVENTS_KEY = 'shared_events';
 
@@ -141,6 +142,7 @@ class EventShareService {
   async joinSharedEvent(shareId, memberName) {
     try {
       const event = await this.getSharedEvent(shareId);
+      const currentUser = await AuthService.getUserData();
       
       if (!event) {
         throw new Error('イベントが見つかりません');
@@ -151,10 +153,18 @@ class EventShareService {
         throw new Error('既に参加しています');
       }
       
+      // 参加者として既に追加されていないかチェック
+      const isAlreadyParticipant = event.participants && 
+        event.participants.some(p => p.userId === currentUser?.userId);
+      
       const updatedMembers = event.members ? [...event.members, memberName] : [memberName];
+      const updatedParticipants = isAlreadyParticipant ? 
+        event.participants : 
+        [...(event.participants || []), currentUser];
       
       await this.updateSharedEvent(shareId, {
-        members: updatedMembers
+        members: updatedMembers,
+        participants: updatedParticipants
       });
       
       return await this.getSharedEvent(shareId);
