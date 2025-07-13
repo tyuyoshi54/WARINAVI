@@ -61,30 +61,50 @@ export default function AddFriendScreen({ user, onBack, onFriendAdded }) {
   const handleAddFriend = async () => {
     if (!searchResult) return;
 
-    try {
-      const result = await FriendService.addFriend(user.userId, searchResult);
-      
-      if (result.success) {
-        Alert.alert(
-          '友達追加完了',
-          `${searchResult.displayName}を友達に追加しました`,
-          [
-            {
-              text: 'OK',
-              onPress: () => {
-                setSearchResult(null);
-                setSearchText('');
-                if (onFriendAdded) onFriendAdded();
+    Alert.alert(
+      'フレンド申請を送信',
+      `${searchResult.displayName}にフレンド申請を送信しますか？`,
+      [
+        { text: 'キャンセル', style: 'cancel' },
+        {
+          text: '送信',
+          onPress: async () => {
+            try {
+              const result = await FriendService.sendFriendRequest(
+                user.userId,
+                searchResult.userId,
+                {
+                  userId: user.userId,
+                  displayName: user.displayName,
+                  pictureUrl: user.pictureUrl
+                }
+              );
+              
+              if (result.success) {
+                Alert.alert(
+                  'フレンド申請送信完了',
+                  `${searchResult.displayName}にフレンド申請を送信しました`,
+                  [
+                    {
+                      text: 'OK',
+                      onPress: () => {
+                        setSearchResult(null);
+                        setSearchText('');
+                        if (onFriendAdded) onFriendAdded();
+                      }
+                    }
+                  ]
+                );
+              } else {
+                Alert.alert('エラー', result.error);
               }
+            } catch (error) {
+              Alert.alert('エラー', 'フレンド申請の送信に失敗しました');
             }
-          ]
-        );
-      } else {
-        Alert.alert('エラー', result.error);
-      }
-    } catch (error) {
-      Alert.alert('エラー', '友達の追加に失敗しました');
-    }
+          }
+        }
+      ]
+    );
   };
 
   const handleShowMyQR = () => {
@@ -107,32 +127,48 @@ export default function AddFriendScreen({ user, onBack, onFriendAdded }) {
       return;
     }
 
-    try {
-      const result = await FriendService.addFriend(user.userId, {
-        userId: qrData.userId,
-        displayName: qrData.displayName,
-        pictureUrl: qrData.pictureUrl
-      });
-      
-      if (result.success) {
-        Alert.alert(
-          '友達追加完了',
-          `${qrData.displayName}を友達に追加しました`,
-          [
-            {
-              text: 'OK',
-              onPress: () => {
-                if (onFriendAdded) onFriendAdded();
+    Alert.alert(
+      'フレンド申請を送信',
+      `${qrData.displayName}にフレンド申請を送信しますか？`,
+      [
+        { text: 'キャンセル', style: 'cancel' },
+        {
+          text: '送信',
+          onPress: async () => {
+            try {
+              const result = await FriendService.sendFriendRequest(
+                user.userId,
+                qrData.userId,
+                {
+                  userId: user.userId,
+                  displayName: user.displayName,
+                  pictureUrl: user.pictureUrl
+                }
+              );
+              
+              if (result.success) {
+                Alert.alert(
+                  'フレンド申請送信完了',
+                  `${qrData.displayName}にフレンド申請を送信しました`,
+                  [
+                    {
+                      text: 'OK',
+                      onPress: () => {
+                        if (onFriendAdded) onFriendAdded();
+                      }
+                    }
+                  ]
+                );
+              } else {
+                Alert.alert('エラー', result.error);
               }
+            } catch (error) {
+              Alert.alert('エラー', 'フレンド申請の送信に失敗しました');
             }
-          ]
-        );
-      } else {
-        Alert.alert('エラー', result.error);
-      }
-    } catch (error) {
-      Alert.alert('エラー', '友達の追加に失敗しました');
-    }
+          }
+        }
+      ]
+    );
   };
 
   const renderSearchResult = () => {
@@ -155,7 +191,7 @@ export default function AddFriendScreen({ user, onBack, onFriendAdded }) {
             style={styles.addButton}
             onPress={handleAddFriend}
           >
-            <Text style={styles.addButtonText}>追加</Text>
+            <Text style={styles.addButtonText}>申請</Text>
           </TouchableOpacity>
         </View>
       </View>

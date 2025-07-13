@@ -12,6 +12,7 @@ import CommonHeader from '../ui/CommonHeader';
 import ProfileAvatar from '../ui/ProfileAvatar';
 import FriendService from '../../services/FriendService';
 import AddFriendScreen from './AddFriendScreen';
+import FriendRequestsScreen from './FriendRequestsScreen';
 import { Colors } from '../../styles/colors';
 import { CommonStyles } from '../../styles/common';
 
@@ -19,9 +20,12 @@ export default function FriendsScreen({ user, onBack }) {
   const [friends, setFriends] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   const [showAddFriend, setShowAddFriend] = useState(false);
+  const [showRequests, setShowRequests] = useState(false);
+  const [requestCount, setRequestCount] = useState(0);
 
   useEffect(() => {
     loadFriends();
+    loadRequestCount();
   }, []);
 
   const loadFriends = async () => {
@@ -33,6 +37,15 @@ export default function FriendsScreen({ user, onBack }) {
       Alert.alert('エラー', '友達リストの読み込みに失敗しました');
     } finally {
       setIsLoading(false);
+    }
+  };
+
+  const loadRequestCount = async () => {
+    try {
+      const requests = await FriendService.getFriendRequests(user.userId);
+      setRequestCount(requests.length);
+    } catch (error) {
+      console.error('フレンド申請数の取得エラー:', error);
     }
   };
 
@@ -61,6 +74,12 @@ export default function FriendsScreen({ user, onBack }) {
   const handleAddFriendComplete = () => {
     setShowAddFriend(false);
     loadFriends();
+  };
+
+  const handleRequestsComplete = () => {
+    setShowRequests(false);
+    loadFriends();
+    loadRequestCount();
   };
 
   const renderFriendItem = ({ item }) => (
@@ -112,6 +131,16 @@ export default function FriendsScreen({ user, onBack }) {
     );
   }
 
+  if (showRequests) {
+    return (
+      <FriendRequestsScreen
+        user={user}
+        onBack={() => setShowRequests(false)}
+        onRequestHandled={handleRequestsComplete}
+      />
+    );
+  }
+
   return (
     <SafeAreaView style={CommonStyles.safeArea}>
       <CommonHeader
@@ -128,6 +157,25 @@ export default function FriendsScreen({ user, onBack }) {
       />
 
       <View style={styles.container}>
+        {/* フレンド申請ボタン */}
+        {requestCount > 0 && (
+          <TouchableOpacity 
+            style={styles.requestsButton}
+            onPress={() => setShowRequests(true)}
+          >
+            <Text style={styles.requestsButtonIcon}>📬</Text>
+            <View style={styles.requestsButtonInfo}>
+              <Text style={styles.requestsButtonText}>フレンド申請</Text>
+              <Text style={styles.requestsButtonSubtext}>
+                {requestCount}件の申請があります
+              </Text>
+            </View>
+            <View style={styles.requestsBadge}>
+              <Text style={styles.requestsBadgeText}>{requestCount}</Text>
+            </View>
+          </TouchableOpacity>
+        )}
+
         {friends.length > 0 && (
           <View style={styles.friendsCount}>
             <Text style={styles.friendsCountText}>
@@ -276,6 +324,54 @@ const styles = StyleSheet.create({
   addFirstFriendButtonText: {
     color: Colors.textInverse,
     fontSize: 16,
+    fontWeight: '600',
+  },
+  
+  // フレンド申請ボタン
+  requestsButton: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingHorizontal: 20,
+    paddingVertical: 16,
+    backgroundColor: Colors.background,
+    borderBottomWidth: 1,
+    borderBottomColor: Colors.border,
+    marginBottom: 8,
+  },
+  
+  requestsButtonIcon: {
+    fontSize: 24,
+    marginRight: 16,
+  },
+  
+  requestsButtonInfo: {
+    flex: 1,
+  },
+  
+  requestsButtonText: {
+    fontSize: 16,
+    fontWeight: '600',
+    color: Colors.textPrimary,
+    marginBottom: 2,
+  },
+  
+  requestsButtonSubtext: {
+    fontSize: 14,
+    color: Colors.textSecondary,
+  },
+  
+  requestsBadge: {
+    backgroundColor: Colors.error,
+    paddingHorizontal: 8,
+    paddingVertical: 4,
+    borderRadius: 12,
+    minWidth: 24,
+    alignItems: 'center',
+  },
+  
+  requestsBadgeText: {
+    color: Colors.textInverse,
+    fontSize: 12,
     fontWeight: '600',
   },
 });
