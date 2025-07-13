@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   View,
   Text,
@@ -8,37 +8,58 @@ import {
   SafeAreaView,
   Image
 } from 'react-native';
+import EventService from '../../services/EventService';
 
 export default function TalkListScreen({ onSelectTalk }) {
-  const [talkRooms] = useState([
-    {
-      id: '1',
-      title: '新年会の準備',
-      lastMessage: '会場の予約取れました！',
-      lastMessageTime: '14:32',
-      participants: ['田中太郎', '佐藤花子', 'あなた'],
-      unreadCount: 2,
-      eventType: 'party'
-    },
-    {
-      id: '2', 
-      title: 'プロジェクト飲み会',
-      lastMessage: 'お疲れ様でした！',
-      lastMessageTime: '昨日',
-      participants: ['山田一郎', '鈴木次郎', 'あなた'],
-      unreadCount: 0,
-      eventType: 'work'
-    },
-    {
-      id: '3',
-      title: 'バーベキュー企画',
-      lastMessage: '場所どこにしましょうか？',
-      lastMessageTime: '2日前',
-      participants: ['高橋三郎', '田中太郎', '佐藤花子', 'あなた'],
-      unreadCount: 1,
-      eventType: 'outdoor'
+  const [talkRooms, setTalkRooms] = useState([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    loadParticipatingEvents();
+  }, []);
+
+  const loadParticipatingEvents = async () => {
+    try {
+      setLoading(true);
+      const events = await EventService.getParticipatingEvents();
+      
+      const talkRoomData = events.map(event => {
+        const participants = [];
+        
+        // ホストを追加
+        if (event.hostUser) {
+          participants.push(event.hostUser.displayName || 'ホスト');
+        }
+        
+        // 参加者を追加
+        if (event.participants) {
+          event.participants.forEach(participant => {
+            if (participant.displayName && !participants.includes(participant.displayName)) {
+              participants.push(participant.displayName);
+            }
+          });
+        }
+        
+        return {
+          id: event.id || event.shareId,
+          title: event.name,
+          lastMessage: '',
+          lastMessageTime: '',
+          participants: participants,
+          unreadCount: 0,
+          eventType: 'event',
+          eventIcon: event.icon || '💬',
+          eventData: event
+        };
+      });
+      
+      setTalkRooms(talkRoomData);
+    } catch (error) {
+      console.error('参加イベント取得エラー:', error);
+    } finally {
+      setLoading(false);
     }
-  ]);
+  };
 
   const getEventIcon = (eventType) => {
     switch (eventType) {
@@ -48,6 +69,8 @@ export default function TalkListScreen({ onSelectTalk }) {
         return '💼';
       case 'outdoor':
         return '🏕️';
+      case 'event':
+        return '💬';
       default:
         return '💬';
     }
@@ -60,7 +83,7 @@ export default function TalkListScreen({ onSelectTalk }) {
       activeOpacity={0.7}
     >
       <View style={styles.iconContainer}>
-        <Text style={styles.eventIcon}>{getEventIcon(item.eventType)}</Text>
+        <Text style={styles.eventIcon}>{item.eventIcon || getEventIcon(item.eventType)}</Text>
       </View>
       
       <View style={styles.talkContent}>
@@ -99,7 +122,12 @@ export default function TalkListScreen({ onSelectTalk }) {
         <Text style={styles.roomCount}>{talkRooms.length}件のトーク</Text>
       </View>
 
-      {talkRooms.length === 0 ? (
+      {loading ? (
+        <View style={styles.emptyContainer}>
+          <Text style={styles.emptyIcon}>💬</Text>
+          <Text style={styles.emptyText}>読み込み中...</Text>
+        </View>
+      ) : talkRooms.length === 0 ? (
         <View style={styles.emptyContainer}>
           <Text style={styles.emptyIcon}>💬</Text>
           <Text style={styles.emptyText}>まだトークがありません</Text>

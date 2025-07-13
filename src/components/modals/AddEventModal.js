@@ -15,6 +15,14 @@ export default function AddEventModal({ visible, onClose, onSave }) {
   const [eventName, setEventName] = useState('');
   const [members, setMembers] = useState(['']);
   const [newMemberName, setNewMemberName] = useState('');
+  const [selectedIcon, setSelectedIcon] = useState('🎉');
+
+  const eventIcons = [
+    '🎉', '🍻', '🍽️', '🏠', '🎵', '🎮',
+    '⚽', '🏀', '🎾', '🏊', '🎿', '🏕️',
+    '🌸', '🍔', '🍕', '☕', '🎂', '🎊',
+    '💼', '📚', '🎯', '🎪', '🎨', '🎭'
+  ];
 
   const addMember = () => {
     if (newMemberName.trim()) {
@@ -50,6 +58,7 @@ export default function AddEventModal({ visible, onClose, onSave }) {
       id: Date.now().toString(),
       name: eventName.trim(),
       members: validMembers,
+      icon: selectedIcon,
       createdAt: new Date().toLocaleDateString(),
     };
 
@@ -66,6 +75,7 @@ export default function AddEventModal({ visible, onClose, onSave }) {
     setEventName('');
     setMembers(['']);
     setNewMemberName('');
+    setSelectedIcon('🎉');
   };
 
   const renderMember = ({ item, index }) => (
@@ -108,6 +118,24 @@ export default function AddEventModal({ visible, onClose, onSave }) {
                 placeholder="飲み会、バーベキューなど"
                 returnKeyType="next"
               />
+            </View>
+
+            <View style={styles.inputSection}>
+              <Text style={styles.sectionTitle}>アイコン</Text>
+              <View style={styles.iconGrid}>
+                {eventIcons.map((icon, index) => (
+                  <TouchableOpacity
+                    key={index}
+                    style={[
+                      styles.iconButton,
+                      selectedIcon === icon && styles.selectedIconButton
+                    ]}
+                    onPress={() => setSelectedIcon(icon)}
+                  >
+                    <Text style={styles.iconText}>{icon}</Text>
+                  </TouchableOpacity>
+                ))}
+              </View>
             </View>
 
             <View style={styles.inputSection}>
@@ -275,5 +303,28 @@ const styles = StyleSheet.create({
     color: '#fff',
     textAlign: 'center',
     fontWeight: 'bold',
+  },
+  iconGrid: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    justifyContent: 'space-between',
+  },
+  iconButton: {
+    width: 45,
+    height: 45,
+    borderRadius: 22.5,
+    backgroundColor: '#f8f9fa',
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginBottom: 10,
+    borderWidth: 2,
+    borderColor: 'transparent',
+  },
+  selectedIconButton: {
+    borderColor: '#007AFF',
+    backgroundColor: '#e3f2fd',
+  },
+  iconText: {
+    fontSize: 24,
   },
 });

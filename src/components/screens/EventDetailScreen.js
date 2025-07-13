@@ -12,6 +12,7 @@ import {
 } from 'react-native';
 import AddPaymentModal from '../modals/AddPaymentModal';
 import EditPaymentModal from '../modals/EditPaymentModal';
+import EditEventModal from '../modals/EditEventModal';
 import InviteFriendsModal from '../modals/InviteFriendsModal';
 import SettlementResult from '../common/SettlementResult';
 import EventInfo from '../common/EventInfo';
@@ -24,6 +25,7 @@ export default function EventDetailScreen({ event, onBack, onUpdateEvent, onNavi
   const [isInviteModalVisible, setIsInviteModalVisible] = useState(false);
   const [isEditPaymentModalVisible, setIsEditPaymentModalVisible] = useState(false);
   const [editingPayment, setEditingPayment] = useState(null);
+  const [isEditEventModalVisible, setIsEditEventModalVisible] = useState(false);
 
   const addPayment = () => {
     setIsPaymentModalVisible(true);
@@ -74,6 +76,15 @@ export default function EventDetailScreen({ event, onBack, onUpdateEvent, onNavi
     setIsInviteModalVisible(true);
   };
 
+  const handleEditEvent = () => {
+    setIsEditEventModalVisible(true);
+  };
+
+  const handleSaveEditedEvent = (updatedEvent) => {
+    onUpdateEvent(updatedEvent);
+    setIsEditEventModalVisible(false);
+  };
+
   const handleShareEvent = async () => {
     try {
       // 共有リンクを生成
@@ -105,6 +116,9 @@ export default function EventDetailScreen({ event, onBack, onUpdateEvent, onNavi
         </TouchableOpacity>
         
         <View style={styles.headerButtons}>
+          <TouchableOpacity style={styles.headerButton} onPress={handleEditEvent}>
+            <Text style={styles.headerButtonText}>編集</Text>
+          </TouchableOpacity>
           <TouchableOpacity style={styles.headerButton} onPress={handleInviteFriends}>
             <Text style={styles.headerButtonText}>招待</Text>
           </TouchableOpacity>
@@ -159,6 +173,13 @@ export default function EventDetailScreen({ event, onBack, onUpdateEvent, onNavi
         onSave={handleSaveEditedPayment}
         members={event.members}
         payment={editingPayment}
+      />
+
+      <EditEventModal
+        visible={isEditEventModalVisible}
+        onClose={() => setIsEditEventModalVisible(false)}
+        onSave={handleSaveEditedEvent}
+        event={event}
       />
 
       <InviteFriendsModal

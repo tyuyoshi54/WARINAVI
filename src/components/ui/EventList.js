@@ -23,6 +23,9 @@ export default function EventList({
       onPress={() => onEventPress(item)}
       activeOpacity={0.7}
     >
+      <View style={styles.iconContainer}>
+        <Text style={styles.eventIcon}>{item.icon || '📅'}</Text>
+      </View>
       <View style={styles.eventContent}>
         <Text style={styles.eventName} numberOfLines={2}>
           {item.name}
@@ -92,6 +95,20 @@ const styles = StyleSheet.create({
     marginVertical: Dimensions.spacing.xs,
     borderRadius: Dimensions.borderRadius.md,
     ...CommonStyles.shadowLight,
+  },
+  
+  iconContainer: {
+    width: 50,
+    height: 50,
+    borderRadius: 25,
+    backgroundColor: '#f8f9fa',
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginRight: Dimensions.spacing.md,
+  },
+  
+  eventIcon: {
+    fontSize: 24,
   },
   
   eventContent: {

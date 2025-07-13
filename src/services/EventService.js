@@ -81,6 +81,46 @@ class EventService {
     }
   }
 
+  async getParticipatingEvents() {
+    try {
+      const currentUser = await AuthService.getUserData();
+      if (!currentUser) return [];
+
+      const events = await this.loadEvents();
+      const sharedEvents = await this.getSharedEvents();
+      
+      const participatingEvents = [];
+      
+      // 自分が作成したイベント
+      const ownEvents = events.filter(event => 
+        event.hostUser && event.hostUser.userId === currentUser.userId
+      );
+      participatingEvents.push(...ownEvents);
+      
+      // 共有イベント（参加者として追加されているもの）
+      Object.values(sharedEvents).forEach(event => {
+        if (event.participants && event.participants.some(p => p.userId === currentUser.userId)) {
+          participatingEvents.push(event);
+        }
+      });
+      
+      return participatingEvents;
+    } catch (error) {
+      console.error('参加イベント取得エラー:', error);
+      return [];
+    }
+  }
+
+  async getSharedEvents() {
+    try {
+      const EventShareService = require('./EventShareService').default;
+      return await EventShareService.getSharedEvents();
+    } catch (error) {
+      console.error('共有イベント取得エラー:', error);
+      return {};
+    }
+  }
+
   async clearAllEvents() {
     try {
       await AsyncStorage.removeItem(EVENT_STORAGE_KEY);
