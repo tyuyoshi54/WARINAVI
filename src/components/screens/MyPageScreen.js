@@ -9,6 +9,7 @@ import {
   SafeAreaView
 } from 'react-native';
 import ProfileEditScreen from './ProfileEditScreen';
+import CommonHeader from '../ui/CommonHeader';
 
 export default function MyPageScreen({ user, onBack, onUpdateUser }) {
   const [isEditMode, setIsEditMode] = useState(false);
@@ -38,15 +39,16 @@ export default function MyPageScreen({ user, onBack, onUpdateUser }) {
 
   return (
     <SafeAreaView style={styles.container}>
-      <View style={styles.header}>
-        <TouchableOpacity style={styles.backButton} onPress={onBack}>
-          <Text style={styles.backButtonText}>←</Text>
-        </TouchableOpacity>
-        <Text style={styles.headerTitle}>マイページ</Text>
-        <TouchableOpacity style={styles.editButton} onPress={handleEditPress}>
-          <Text style={styles.editButtonText}>編集</Text>
-        </TouchableOpacity>
-      </View>
+      <CommonHeader
+        title="マイページ"
+        onBack={onBack}
+        backText="←"
+        rightComponent={
+          <TouchableOpacity style={styles.editButton} onPress={handleEditPress}>
+            <Text style={styles.editButtonText}>編集</Text>
+          </TouchableOpacity>
+        }
+      />
 
       <ScrollView contentContainerStyle={styles.content}>
         <View style={styles.profileSection}>
@@ -131,30 +133,6 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: '#f8f9fa',
-  },
-  header: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    paddingHorizontal: 16,
-    paddingVertical: 12,
-    backgroundColor: '#ffffff',
-    borderBottomWidth: 1,
-    borderBottomColor: '#e1e8ed',
-  },
-  backButton: {
-    padding: 8,
-    borderRadius: 20,
-    backgroundColor: '#f1f3f4',
-  },
-  backButtonText: {
-    fontSize: 20,
-    color: '#2c3e50',
-  },
-  headerTitle: {
-    fontSize: 18,
-    fontWeight: '600',
-    color: '#2c3e50',
   },
   editButton: {
     paddingHorizontal: 16,

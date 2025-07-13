@@ -10,6 +10,7 @@ import {
   Platform,
   SafeAreaView
 } from 'react-native';
+import CommonHeader from '../ui/CommonHeader';
 
 export default function ChatScreen({ talkRoom, onBack }) {
   const [messages, setMessages] = useState([
@@ -85,18 +86,15 @@ export default function ChatScreen({ talkRoom, onBack }) {
 
   return (
     <SafeAreaView style={styles.container}>
-      <View style={styles.header}>
-        <TouchableOpacity onPress={onBack} style={styles.backButton}>
-          <Text style={styles.backText}>‹ 戻る</Text>
-        </TouchableOpacity>
-        <View style={styles.headerInfo}>
-          <Text style={styles.headerTitle}>{talkRoom?.title || 'トーク'}</Text>
+      <CommonHeader
+        title={talkRoom?.title || 'トーク'}
+        onBack={onBack}
+        rightComponent={
           <Text style={styles.memberCount}>
             {talkRoom?.participants?.length || 3}人
           </Text>
-        </View>
-        <View style={styles.headerRight} />
-      </View>
+        }
+      />
 
       <KeyboardAvoidingView 
         style={styles.content}
@@ -149,41 +147,9 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: '#f8f9fa',
   },
-  header: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    paddingHorizontal: 16,
-    paddingVertical: 12,
-    backgroundColor: '#ffffff',
-    borderBottomWidth: 1,
-    borderBottomColor: '#e1e8ed',
-  },
-  backButton: {
-    paddingVertical: 8,
-    paddingHorizontal: 4,
-  },
-  backText: {
-    fontSize: 18,
-    color: '#3498db',
-    fontWeight: '500',
-  },
-  headerInfo: {
-    flex: 1,
-    alignItems: 'center',
-  },
-  headerTitle: {
-    fontSize: 18,
-    fontWeight: '600',
-    color: '#2c3e50',
-  },
   memberCount: {
     fontSize: 12,
     color: '#7f8c8d',
-    marginTop: 2,
-  },
-  headerRight: {
-    width: 60,
   },
   content: {
     flex: 1,

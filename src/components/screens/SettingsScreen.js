@@ -9,6 +9,7 @@ import {
   Alert,
   SafeAreaView
 } from 'react-native';
+import CommonHeader from '../ui/CommonHeader';
 
 export default function SettingsScreen({ onNavigateBack }) {
   const [notificationSettings, setNotificationSettings] = useState({
@@ -99,13 +100,10 @@ export default function SettingsScreen({ onNavigateBack }) {
 
   return (
     <SafeAreaView style={styles.container}>
-      <View style={styles.header}>
-        <TouchableOpacity onPress={onNavigateBack} style={styles.backButton}>
-          <Text style={styles.backText}>‹ 戻る</Text>
-        </TouchableOpacity>
-        <Text style={styles.headerTitle}>設定</Text>
-        <View style={styles.headerRight} />
-      </View>
+      <CommonHeader
+        title="設定"
+        onBack={onNavigateBack}
+      />
 
       <ScrollView style={styles.content} showsVerticalScrollIndicator={false}>
         {renderSectionHeader('通知設定')}
@@ -170,33 +168,6 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: '#ffffff',
-  },
-  header: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    paddingHorizontal: 16,
-    paddingVertical: 12,
-    borderBottomWidth: 1,
-    borderBottomColor: '#e1e8ed',
-    backgroundColor: '#ffffff',
-  },
-  backButton: {
-    paddingVertical: 8,
-    paddingHorizontal: 4,
-  },
-  backText: {
-    fontSize: 18,
-    color: '#3498db',
-    fontWeight: '500',
-  },
-  headerTitle: {
-    fontSize: 18,
-    fontWeight: '600',
-    color: '#2c3e50',
-  },
-  headerRight: {
-    width: 60,
   },
   content: {
     flex: 1,
