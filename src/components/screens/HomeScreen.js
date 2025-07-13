@@ -4,6 +4,7 @@ import AddEventModal from '../modals/AddEventModal';
 import EventDetailScreen from './EventDetailScreen';
 import SideMenu from '../common/SideMenu';
 import SettingsScreen from './SettingsScreen';
+import FriendsScreen from './FriendsScreen';
 import EventList from '../ui/EventList';
 import ProfileAvatar from '../ui/ProfileAvatar';
 import CommonHeader from '../ui/CommonHeader';
@@ -14,6 +15,7 @@ import { CommonStyles, Dimensions } from '../../styles/common';
 
 export default function HomeScreen({ user, onNavigateToMyPage, hideTabBar = false, onNavigateToSettings }) {
   const [isModalVisible, setIsModalVisible] = useState(false);
+  const [isFriendsVisible, setIsFriendsVisible] = useState(false);
   
   // カスタムフック使用
   const {
@@ -54,6 +56,10 @@ export default function HomeScreen({ user, onNavigateToMyPage, hideTabBar = fals
     navigateToSettings(hideTabBar, onNavigateToSettings);
   };
 
+  const handleFriendsPress = () => {
+    setIsFriendsVisible(true);
+  };
+
   // 画面条件分岐
   if (selectedEvent) {
     return (
@@ -69,6 +75,15 @@ export default function HomeScreen({ user, onNavigateToMyPage, hideTabBar = fals
     return (
       <SettingsScreen
         onNavigateBack={hideSettings}
+      />
+    );
+  }
+
+  if (isFriendsVisible) {
+    return (
+      <FriendsScreen
+        user={user}
+        onBack={() => setIsFriendsVisible(false)}
       />
     );
   }
@@ -115,6 +130,7 @@ export default function HomeScreen({ user, onNavigateToMyPage, hideTabBar = fals
         slideAnim={slideAnim}
         onNavigateToMyPage={onNavigateToMyPage}
         onNavigateToSettings={handleSettingsPress}
+        onNavigateToFriends={handleFriendsPress}
       />
     </SafeAreaView>
   );

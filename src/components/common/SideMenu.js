@@ -20,7 +20,8 @@ export default function SideMenu({
   user, 
   slideAnim,
   onNavigateToMyPage,
-  onNavigateToSettings 
+  onNavigateToSettings,
+  onNavigateToFriends
 }) {
   const handleProfilePress = () => {
     console.log('プロフィール押下');
@@ -35,6 +36,14 @@ export default function SideMenu({
     onClose();
     if (onNavigateToSettings) {
       onNavigateToSettings();
+    }
+  };
+
+  const handleFriendsPress = () => {
+    console.log('友達追加押下');
+    onClose();
+    if (onNavigateToFriends) {
+      onNavigateToFriends();
     }
   };
 
@@ -87,6 +96,16 @@ export default function SideMenu({
                 <Text style={styles.menuIconText}>👤</Text>
               </View>
               <Text style={styles.menuItemText}>プロフィール</Text>
+            </TouchableOpacity>
+
+            <TouchableOpacity 
+              style={styles.menuItem} 
+              onPress={handleFriendsPress}
+            >
+              <View style={styles.menuIcon}>
+                <Text style={styles.menuIconText}>👥</Text>
+              </View>
+              <Text style={styles.menuItemText}>友達追加</Text>
             </TouchableOpacity>
 
             <TouchableOpacity 
