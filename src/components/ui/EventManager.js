@@ -1,32 +1,73 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
+import EventService from '../../services/EventService';
 
 export const useEventManager = () => {
   const [events, setEvents] = useState([]);
   const [selectedEvent, setSelectedEvent] = useState(null);
 
+  // アプリ起動時にイベントデータを読み込み
+  useEffect(() => {
+    const loadEvents = async () => {
+      try {
+        const savedEvents = await EventService.loadEvents();
+        setEvents(savedEvents);
+      } catch (error) {
+        console.error('イベントデータの読み込みに失敗:', error);
+      }
+    };
+    
+    loadEvents();
+  }, []);
+
   // イベント追加
-  const addEvent = (eventData) => {
-    setEvents(prevEvents => [...prevEvents, eventData]);
+  const addEvent = async (eventData) => {
+    try {
+      const savedEvent = await EventService.addEvent(eventData);
+      setEvents(prevEvents => [...prevEvents, savedEvent]);
+      return savedEvent;
+    } catch (error) {
+      console.error('イベントの追加に失敗:', error);
+      throw error;
+    }
   };
 
   // イベント更新
-  const updateEvent = (updatedEvent) => {
-    setEvents(prevEvents => 
-      prevEvents.map(event => 
-        event.id === updatedEvent.id ? updatedEvent : event
-      )
-    );
+  const updateEvent = async (updatedEvent) => {
+    try {
+      const savedEvent = await EventService.updateEvent(updatedEvent.id, updatedEvent);
+      setEvents(prevEvents => 
+        prevEvents.map(event => 
+          event.id === updatedEvent.id ? savedEvent : event
+        )
+      );
+      
+      // 選択中のイベントも更新
+      if (selectedEvent?.id === updatedEvent.id) {
+        setSelectedEvent(savedEvent);
+      }
+      
+      return savedEvent;
+    } catch (error) {
+      console.error('イベントの更新に失敗:', error);
+      throw error;
+    }
   };
 
   // イベント削除
-  const deleteEvent = (eventId) => {
-    setEvents(prevEvents => 
-      prevEvents.filter(event => event.id !== eventId)
-    );
-    
-    // 選択中のイベントが削除された場合は選択解除
-    if (selectedEvent?.id === eventId) {
-      setSelectedEvent(null);
+  const deleteEvent = async (eventId) => {
+    try {
+      await EventService.deleteEvent(eventId);
+      setEvents(prevEvents => 
+        prevEvents.filter(event => event.id !== eventId)
+      );
+      
+      // 選択中のイベントが削除された場合は選択解除
+      if (selectedEvent?.id === eventId) {
+        setSelectedEvent(null);
+      }
+    } catch (error) {
+      console.error('イベントの削除に失敗:', error);
+      throw error;
     }
   };
 

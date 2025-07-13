@@ -1,10 +1,44 @@
 import React from 'react';
-import { StyleSheet, Text, View } from 'react-native';
+import { StyleSheet, Text, View, TouchableOpacity, Linking, Alert } from 'react-native';
 import { calculateSettlement } from '../../utils/settlementCalculator';
 
-export default function SettlementResult({ members, payments }) {
+export default function SettlementResult({ members, payments, onNavigateToPayPay }) {
 
   const settlement = calculateSettlement(members, payments);
+
+  const handlePayPayPress = (settlementItem) => {
+    if (onNavigateToPayPay) {
+      onNavigateToPayPay({
+        fromUser: settlementItem.from,
+        toUser: settlementItem.to,
+        amount: settlementItem.amount,
+      });
+    }
+  };
+
+  const handlePayPayDirectPress = async (settlementItem) => {
+    const payPayAppUrl = 'paypay://';
+    const payPayWebUrl = 'https://paypay.ne.jp/app/send';
+    
+    try {
+      const canOpen = await Linking.canOpenURL(payPayAppUrl);
+      if (canOpen) {
+        await Linking.openURL(payPayAppUrl);
+        Alert.alert(
+          'PayPayアプリを開きました',
+          `送金手順:\n1. 送金画面で「送る」をタップ\n2. 受取者: ${settlementItem.to}\n3. 金額: ¥${settlementItem.amount.toLocaleString()}を入力`
+        );
+      } else {
+        await Linking.openURL(payPayWebUrl);
+        Alert.alert(
+          'PayPayアプリがインストールされていません',
+          'ブラウザでPayPayの送金ページを開きました'
+        );
+      }
+    } catch (error) {
+      Alert.alert('エラー', 'PayPayを開けませんでした');
+    }
+  };
 
   if (settlement.totalAmount === 0) {
     return (
@@ -60,15 +94,33 @@ export default function SettlementResult({ members, payments }) {
           <Text style={styles.subTitle}>精算方法</Text>
           {settlement.settlements.map((settlement, index) => (
             <View key={index} style={styles.settlementItem}>
-              <Text style={styles.settlementText}>
-                <Text style={styles.fromName}>{settlement.from}</Text>
-                {' → '}
-                <Text style={styles.toName}>{settlement.to}</Text>
-                {': '}
-                <Text style={styles.settlementAmount}>
-                  ¥{settlement.amount.toLocaleString()}
+              <View style={styles.settlementTextContainer}>
+                <Text style={styles.settlementText}>
+                  <Text style={styles.fromName}>{settlement.from}</Text>
+                  {' → '}
+                  <Text style={styles.toName}>{settlement.to}</Text>
+                  {': '}
+                  <Text style={styles.settlementAmount}>
+                    ¥{settlement.amount.toLocaleString()}
+                  </Text>
                 </Text>
-              </Text>
+              </View>
+              {onNavigateToPayPay && (
+                <View style={styles.payPayButtonContainer}>
+                  <TouchableOpacity
+                    style={styles.payPayDirectButton}
+                    onPress={() => handlePayPayDirectPress(settlement)}
+                  >
+                    <Text style={styles.payPayButtonText}>PayPay開く</Text>
+                  </TouchableOpacity>
+                  <TouchableOpacity
+                    style={styles.payPayButton}
+                    onPress={() => handlePayPayPress(settlement)}
+                  >
+                    <Text style={styles.payPayButtonText}>リンク作成</Text>
+                  </TouchableOpacity>
+                </View>
+              )}
             </View>
           ))}
         </View>
@@ -141,9 +193,15 @@ const styles = StyleSheet.create({
     padding: 12,
   },
   settlementItem: {
-    paddingVertical: 6,
+    paddingVertical: 8,
     borderBottomWidth: 1,
     borderBottomColor: '#f0f0f0',
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+  },
+  settlementTextContainer: {
+    flex: 1,
   },
   settlementText: {
     fontSize: 14,
@@ -166,5 +224,27 @@ const styles = StyleSheet.create({
     color: '#666',
     textAlign: 'center',
     paddingVertical: 20,
+  },
+  payPayButtonContainer: {
+    flexDirection: 'row',
+    gap: 6,
+    marginLeft: 8,
+  },
+  payPayButton: {
+    backgroundColor: '#ff6b35',
+    borderRadius: 6,
+    paddingHorizontal: 10,
+    paddingVertical: 6,
+  },
+  payPayDirectButton: {
+    backgroundColor: '#00A0FF',
+    borderRadius: 6,
+    paddingHorizontal: 10,
+    paddingVertical: 6,
+  },
+  payPayButtonText: {
+    color: '#fff',
+    fontSize: 11,
+    fontWeight: 'bold',
   },
 });

@@ -13,7 +13,7 @@ import { useNavigationHandler } from '../../hooks/useNavigationHandler';
 import { Colors } from '../../styles/colors';
 import { CommonStyles, Dimensions } from '../../styles/common';
 
-export default function HomeScreen({ user, onNavigateToMyPage, hideTabBar = false, onNavigateToSettings }) {
+export default function HomeScreen({ user, onNavigateToMyPage, hideTabBar = false, onNavigateToSettings, onNavigateToPayPay }) {
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [isFriendsVisible, setIsFriendsVisible] = useState(false);
   
@@ -42,9 +42,13 @@ export default function HomeScreen({ user, onNavigateToMyPage, hideTabBar = fals
     setIsModalVisible(true);
   };
 
-  const handleSaveEvent = (eventData) => {
-    addEvent(eventData);
-    setIsModalVisible(false);
+  const handleSaveEvent = async (eventData) => {
+    try {
+      await addEvent(eventData);
+      setIsModalVisible(false);
+    } catch (error) {
+      console.error('イベントの保存に失敗:', error);
+    }
   };
 
   const handleCloseModal = () => {
@@ -67,6 +71,7 @@ export default function HomeScreen({ user, onNavigateToMyPage, hideTabBar = fals
         event={selectedEvent}
         onBack={clearSelection}
         onUpdateEvent={updateEvent}
+        onNavigateToPayPay={onNavigateToPayPay}
       />
     );
   }

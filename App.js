@@ -6,6 +6,7 @@ import ProfileSetupScreen from './src/components/screens/ProfileSetupScreen';
 import HomeScreen from './src/components/screens/HomeScreen';
 import MyPageScreen from './src/components/screens/MyPageScreen';
 import MainTabScreen from './src/components/screens/MainTabScreen';
+import PayPayLinkScreen from './src/components/screens/PayPayLinkScreen';
 import AuthService from './src/services/AuthService';
 
 export default function App() {
@@ -14,6 +15,7 @@ export default function App() {
   const [isProfileCompleted, setIsProfileCompleted] = useState(false);
   const [currentScreen, setCurrentScreen] = useState('home');
   const [user, setUser] = useState(null);
+  const [payPayParams, setPayPayParams] = useState(null);
 
   useEffect(() => {
     checkAuthState();
@@ -64,6 +66,16 @@ export default function App() {
     setUser(updatedUser);
   };
 
+  const handleNavigateToPayPay = (params) => {
+    setPayPayParams(params);
+    setCurrentScreen('paypay');
+  };
+
+  const handleBackFromPayPay = () => {
+    setCurrentScreen('home');
+    setPayPayParams(null);
+  };
+
   if (isLoading) {
     return <LoadingScreen />;
   }
@@ -86,10 +98,23 @@ export default function App() {
     );
   }
 
+  if (currentScreen === 'paypay') {
+    return (
+      <PayPayLinkScreen 
+        route={{ params: payPayParams }}
+        navigation={{
+          setOptions: () => {},
+          goBack: handleBackFromPayPay
+        }}
+      />
+    );
+  }
+
   return (
     <MainTabScreen 
       user={user} 
       onNavigateToMyPage={handleNavigateToMyPage}
+      onNavigateToPayPay={handleNavigateToPayPay}
     />
   );
 }

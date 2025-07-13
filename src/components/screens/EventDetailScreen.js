@@ -13,7 +13,7 @@ import SettlementResult from '../common/SettlementResult';
 import EventInfo from '../common/EventInfo';
 import PaymentItem from '../common/PaymentItem';
 
-export default function EventDetailScreen({ event, onBack, onUpdateEvent }) {
+export default function EventDetailScreen({ event, onBack, onUpdateEvent, onNavigateToPayPay }) {
   const [isPaymentModalVisible, setIsPaymentModalVisible] = useState(false);
   const [payments, setPayments] = useState(event.payments || []);
 
@@ -71,7 +71,11 @@ export default function EventDetailScreen({ event, onBack, onUpdateEvent }) {
           )}
         </View>
 
-        <SettlementResult members={event.members} payments={payments} />
+        <SettlementResult 
+          members={event.members} 
+          payments={payments} 
+          onNavigateToPayPay={onNavigateToPayPay}
+        />
       </ScrollView>
 
       <AddPaymentModal
