@@ -11,6 +11,7 @@ import {
   Alert,
 } from 'react-native';
 import AddPaymentModal from '../modals/AddPaymentModal';
+import EditPaymentModal from '../modals/EditPaymentModal';
 import InviteFriendsModal from '../modals/InviteFriendsModal';
 import SettlementResult from '../common/SettlementResult';
 import EventInfo from '../common/EventInfo';
@@ -21,6 +22,8 @@ export default function EventDetailScreen({ event, onBack, onUpdateEvent, onNavi
   const [isPaymentModalVisible, setIsPaymentModalVisible] = useState(false);
   const [payments, setPayments] = useState(event.payments || []);
   const [isInviteModalVisible, setIsInviteModalVisible] = useState(false);
+  const [isEditPaymentModalVisible, setIsEditPaymentModalVisible] = useState(false);
+  const [editingPayment, setEditingPayment] = useState(null);
 
   const addPayment = () => {
     setIsPaymentModalVisible(true);
@@ -40,6 +43,31 @@ export default function EventDetailScreen({ event, onBack, onUpdateEvent, onNavi
 
   const handleClosePaymentModal = () => {
     setIsPaymentModalVisible(false);
+  };
+
+  const handleEditPayment = (payment) => {
+    setEditingPayment(payment);
+    setIsEditPaymentModalVisible(true);
+  };
+
+  const handleSaveEditedPayment = (updatedPayment) => {
+    const newPayments = payments.map(payment => 
+      payment.id === updatedPayment.id ? updatedPayment : payment
+    );
+    setPayments(newPayments);
+    
+    const updatedEvent = {
+      ...event,
+      payments: newPayments,
+    };
+    onUpdateEvent(updatedEvent);
+    setIsEditPaymentModalVisible(false);
+    setEditingPayment(null);
+  };
+
+  const handleCloseEditPaymentModal = () => {
+    setIsEditPaymentModalVisible(false);
+    setEditingPayment(null);
   };
 
   const handleInviteFriends = () => {
@@ -105,7 +133,7 @@ export default function EventDetailScreen({ event, onBack, onUpdateEvent, onNavi
           ) : (
             <View>
               {payments.map((payment) => (
-                <PaymentItem key={payment.id} payment={payment} />
+                <PaymentItem key={payment.id} payment={payment} onEdit={handleEditPayment} />
               ))}
             </View>
           )}
@@ -123,6 +151,14 @@ export default function EventDetailScreen({ event, onBack, onUpdateEvent, onNavi
         onClose={handleClosePaymentModal}
         onSave={handleSavePayment}
         members={event.members}
+      />
+
+      <EditPaymentModal
+        visible={isEditPaymentModalVisible}
+        onClose={handleCloseEditPaymentModal}
+        onSave={handleSaveEditedPayment}
+        members={event.members}
+        payment={editingPayment}
       />
 
       <InviteFriendsModal

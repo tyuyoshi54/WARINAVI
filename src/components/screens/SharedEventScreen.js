@@ -13,6 +13,7 @@ import EventInfo from '../common/EventInfo';
 import PaymentItem from '../common/PaymentItem';
 import SettlementResult from '../common/SettlementResult';
 import AddPaymentModal from '../modals/AddPaymentModal';
+import EditPaymentModal from '../modals/EditPaymentModal';
 import EventShareService from '../../services/EventShareService';
 
 export default function SharedEventScreen({ shareId, onBack, onNavigateToPayPay }) {
@@ -22,6 +23,8 @@ export default function SharedEventScreen({ shareId, onBack, onNavigateToPayPay 
   const [userName, setUserName] = useState('');
   const [isPaymentModalVisible, setIsPaymentModalVisible] = useState(false);
   const [payments, setPayments] = useState([]);
+  const [isEditPaymentModalVisible, setIsEditPaymentModalVisible] = useState(false);
+  const [editingPayment, setEditingPayment] = useState(null);
 
   useEffect(() => {
     loadSharedEvent();
@@ -96,6 +99,39 @@ export default function SharedEventScreen({ shareId, onBack, onNavigateToPayPay 
 
   const handleClosePaymentModal = () => {
     setIsPaymentModalVisible(false);
+  };
+
+  const handleEditPayment = (payment) => {
+    setEditingPayment(payment);
+    setIsEditPaymentModalVisible(true);
+  };
+
+  const handleSaveEditedPayment = async (updatedPayment) => {
+    try {
+      const newPayments = payments.map(payment => 
+        payment.id === updatedPayment.id ? updatedPayment : payment
+      );
+      setPayments(newPayments);
+      
+      // 共有イベントを更新
+      await EventShareService.updateSharedEvent(shareId, {
+        payments: newPayments
+      });
+      
+      const updatedEvent = await EventShareService.getSharedEvent(shareId);
+      setEvent(updatedEvent);
+      
+      setIsEditPaymentModalVisible(false);
+      setEditingPayment(null);
+    } catch (error) {
+      console.error('支払い編集エラー:', error);
+      Alert.alert('エラー', '支払いの編集に失敗しました');
+    }
+  };
+
+  const handleCloseEditPaymentModal = () => {
+    setIsEditPaymentModalVisible(false);
+    setEditingPayment(null);
   };
 
   if (loading) {
@@ -178,7 +214,7 @@ export default function SharedEventScreen({ shareId, onBack, onNavigateToPayPay 
           ) : (
             <View style={styles.paymentsList}>
               {payments.map((payment, index) => (
-                <PaymentItem key={index} payment={payment} />
+                <PaymentItem key={index} payment={payment} onEdit={handleEditPayment} />
               ))}
             </View>
           )}
@@ -192,12 +228,22 @@ export default function SharedEventScreen({ shareId, onBack, onNavigateToPayPay 
       </ScrollView>
 
       {isJoined && (
-        <AddPaymentModal
-          visible={isPaymentModalVisible}
-          onClose={handleClosePaymentModal}
-          onSave={handleSavePayment}
-          members={event.members || []}
-        />
+        <>
+          <AddPaymentModal
+            visible={isPaymentModalVisible}
+            onClose={handleClosePaymentModal}
+            onSave={handleSavePayment}
+            members={event.members || []}
+          />
+          
+          <EditPaymentModal
+            visible={isEditPaymentModalVisible}
+            onClose={handleCloseEditPaymentModal}
+            onSave={handleSaveEditedPayment}
+            members={event.members || []}
+            payment={editingPayment}
+          />
+        </>
       )}
     </SafeAreaView>
   );
