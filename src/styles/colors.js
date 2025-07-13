@@ -13,6 +13,7 @@ export const Colors = {
   background: '#ffffff',
   backgroundSecondary: '#f8f9fa',
   backgroundTertiary: '#ecf0f1',
+  backgroundDark: '#2c3e50',
   
   // テキストカラー
   textPrimary: '#2c3e50',

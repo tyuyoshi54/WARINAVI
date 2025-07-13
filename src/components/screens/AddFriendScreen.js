@@ -7,10 +7,13 @@ import {
   TextInput,
   Alert,
   SafeAreaView,
-  ScrollView
+  ScrollView,
+  Modal
 } from 'react-native';
 import CommonHeader from '../ui/CommonHeader';
 import ProfileAvatar from '../ui/ProfileAvatar';
+import QRCodeDisplay from '../ui/QRCodeDisplay';
+// import QRScanner from '../ui/QRScanner'; // Expo Goでは利用不可
 import FriendService from '../../services/FriendService';
 import { Colors } from '../../styles/colors';
 import { CommonStyles } from '../../styles/common';
@@ -20,6 +23,7 @@ export default function AddFriendScreen({ user, onBack, onFriendAdded }) {
   const [searchResult, setSearchResult] = useState(null);
   const [isSearching, setIsSearching] = useState(false);
   const [showMyQR, setShowMyQR] = useState(false);
+  const [showQRScanner, setShowQRScanner] = useState(false);
 
   // フレンドIDはユーザIDをそのまま使用
   const getFriendId = () => {
@@ -88,7 +92,47 @@ export default function AddFriendScreen({ user, onBack, onFriendAdded }) {
   };
 
   const handleQRScan = () => {
-    Alert.alert('QRスキャン', 'QRコードスキャン機能は次回実装予定です');
+    Alert.alert(
+      'QRスキャン',
+      'QRスキャン機能は開発ビルドが必要です。\n現在はExpo Goでテスト中のため、QR生成機能のみ利用可能です。'
+    );
+  };
+
+  const handleQRScanSuccess = async (qrData) => {
+    setShowQRScanner(false);
+    
+    // 自分自身のQRコードをスキャンした場合
+    if (qrData.userId === user.userId) {
+      Alert.alert('エラー', '自分自身を友達に追加することはできません');
+      return;
+    }
+
+    try {
+      const result = await FriendService.addFriend(user.userId, {
+        userId: qrData.userId,
+        displayName: qrData.displayName,
+        pictureUrl: qrData.pictureUrl
+      });
+      
+      if (result.success) {
+        Alert.alert(
+          '友達追加完了',
+          `${qrData.displayName}を友達に追加しました`,
+          [
+            {
+              text: 'OK',
+              onPress: () => {
+                if (onFriendAdded) onFriendAdded();
+              }
+            }
+          ]
+        );
+      } else {
+        Alert.alert('エラー', result.error);
+      }
+    } catch (error) {
+      Alert.alert('エラー', '友達の追加に失敗しました');
+    }
   };
 
   const renderSearchResult = () => {
@@ -124,15 +168,7 @@ export default function AddFriendScreen({ user, onBack, onFriendAdded }) {
     return (
       <View style={styles.qrContainer}>
         <Text style={styles.qrTitle}>マイQRコード</Text>
-        <View style={styles.qrCodePlaceholder}>
-          <Text style={styles.qrPlaceholderText}>QRコード表示エリア</Text>
-          <Text style={styles.qrPlaceholderSubtext}>
-            実装予定：{getFriendId()}
-          </Text>
-        </View>
-        <Text style={styles.qrInstruction}>
-          このQRコードを相手にスキャンしてもらってください
-        </Text>
+        <QRCodeDisplay user={user} size={200} showUserInfo={false} />
         <TouchableOpacity
           style={styles.qrCloseButton}
           onPress={() => setShowMyQR(false)}
@@ -226,6 +262,17 @@ export default function AddFriendScreen({ user, onBack, onFriendAdded }) {
 
         {renderMyQR()}
       </ScrollView>
+
+      {/* QRスキャナーモーダル - 開発ビルドでのみ有効 */}
+      {false && showQRScanner && (
+        <Modal
+          visible={showQRScanner}
+          animationType="slide"
+          presentationStyle="fullScreen"
+        >
+          {/* QRScanner - Expo Goでは利用不可 */}
+        </Modal>
+      )}
     </SafeAreaView>
   );
 }
