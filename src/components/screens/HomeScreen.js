@@ -7,7 +7,7 @@ import SettingsScreen from './SettingsScreen';
 
 const { width: screenWidth } = Dimensions.get('window');
 
-export default function HomeScreen({ user, onNavigateToMyPage, hideTabBar = false }) {
+export default function HomeScreen({ user, onNavigateToMyPage, hideTabBar = false, onNavigateToSettings }) {
   const [events, setEvents] = useState([]);
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [selectedEvent, setSelectedEvent] = useState(null);
@@ -63,7 +63,11 @@ export default function HomeScreen({ user, onNavigateToMyPage, hideTabBar = fals
   };
 
   const handleNavigateToSettings = () => {
-    if (!hideTabBar) {
+    if (hideTabBar && onNavigateToSettings) {
+      // タブバー使用時は外部のコールバックを呼び出し
+      onNavigateToSettings();
+    } else if (!hideTabBar) {
+      // 従来通りローカル状態で管理
       setIsSettingsVisible(true);
     }
   };

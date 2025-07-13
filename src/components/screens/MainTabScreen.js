@@ -12,6 +12,10 @@ export default function MainTabScreen({ user, onNavigateToMyPage }) {
     setActiveTab(tabKey);
   };
 
+  const handleNavigateToSettings = () => {
+    setActiveTab('settings');
+  };
+
   const renderCurrentScreen = () => {
     switch (activeTab) {
       case 'home':
@@ -20,6 +24,7 @@ export default function MainTabScreen({ user, onNavigateToMyPage }) {
             user={user} 
             onNavigateToMyPage={onNavigateToMyPage}
             hideTabBar={true}
+            onNavigateToSettings={handleNavigateToSettings}
           />
         );
       case 'talk':
