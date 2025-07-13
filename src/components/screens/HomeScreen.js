@@ -7,7 +7,7 @@ import SettingsScreen from './SettingsScreen';
 
 const { width: screenWidth } = Dimensions.get('window');
 
-export default function HomeScreen({ user, onNavigateToMyPage }) {
+export default function HomeScreen({ user, onNavigateToMyPage, hideTabBar = false }) {
   const [events, setEvents] = useState([]);
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [selectedEvent, setSelectedEvent] = useState(null);
@@ -63,7 +63,9 @@ export default function HomeScreen({ user, onNavigateToMyPage }) {
   };
 
   const handleNavigateToSettings = () => {
-    setIsSettingsVisible(true);
+    if (!hideTabBar) {
+      setIsSettingsVisible(true);
+    }
   };
 
   const handleSettingsBack = () => {

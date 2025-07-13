@@ -5,6 +5,7 @@ import LoginScreen from './src/components/screens/LoginScreen';
 import ProfileSetupScreen from './src/components/screens/ProfileSetupScreen';
 import HomeScreen from './src/components/screens/HomeScreen';
 import MyPageScreen from './src/components/screens/MyPageScreen';
+import MainTabScreen from './src/components/screens/MainTabScreen';
 import AuthService from './src/services/AuthService';
 
 export default function App() {
@@ -86,7 +87,7 @@ export default function App() {
   }
 
   return (
-    <HomeScreen 
+    <MainTabScreen 
       user={user} 
       onNavigateToMyPage={handleNavigateToMyPage}
     />
