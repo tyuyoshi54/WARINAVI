@@ -23,6 +23,9 @@ export default function App() {
 
   const checkAuthState = async () => {
     try {
+      // 最低2秒のロード時間を確保
+      const startTime = Date.now();
+      
       // デバッグ用：認証データをクリア（開発時のみ）
       await AuthService.clearAuthData();
       
@@ -35,6 +38,14 @@ export default function App() {
         setUser(userData);
         setIsLoggedIn(true);
         setIsProfileCompleted(profileCompleted);
+      }
+      
+      // 最低2秒経過するまで待機
+      const elapsedTime = Date.now() - startTime;
+      const remainingTime = Math.max(0, 2000 - elapsedTime);
+      
+      if (remainingTime > 0) {
+        await new Promise(resolve => setTimeout(resolve, remainingTime));
       }
     } catch (error) {
       console.error('認証状態確認エラー:', error);

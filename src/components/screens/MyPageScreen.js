@@ -105,25 +105,6 @@ export default function MyPageScreen({ user, onBack, onUpdateUser }) {
           </View>
         </View>
 
-        <View style={styles.menuSection}>
-          <TouchableOpacity style={styles.menuItem}>
-            <Text style={styles.menuItemIcon}>🔔</Text>
-            <Text style={styles.menuItemText}>通知設定</Text>
-            <Text style={styles.menuItemArrow}>→</Text>
-          </TouchableOpacity>
-
-          <TouchableOpacity style={styles.menuItem}>
-            <Text style={styles.menuItemIcon}>🔒</Text>
-            <Text style={styles.menuItemText}>プライバシー</Text>
-            <Text style={styles.menuItemArrow}>→</Text>
-          </TouchableOpacity>
-
-          <TouchableOpacity style={styles.menuItem}>
-            <Text style={styles.menuItemIcon}>❓</Text>
-            <Text style={styles.menuItemText}>ヘルプ・サポート</Text>
-            <Text style={styles.menuItemArrow}>→</Text>
-          </TouchableOpacity>
-        </View>
       </ScrollView>
     </SafeAreaView>
   );
@@ -226,30 +207,5 @@ const styles = StyleSheet.create({
     fontWeight: '500',
     flex: 1,
     textAlign: 'right',
-  },
-  menuSection: {
-    backgroundColor: '#ffffff',
-  },
-  menuItem: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    paddingHorizontal: 24,
-    paddingVertical: 16,
-    borderBottomWidth: 1,
-    borderBottomColor: '#f1f3f4',
-  },
-  menuItemIcon: {
-    fontSize: 20,
-    marginRight: 16,
-  },
-  menuItemText: {
-    fontSize: 16,
-    color: '#2c3e50',
-    fontWeight: '500',
-    flex: 1,
-  },
-  menuItemArrow: {
-    fontSize: 16,
-    color: '#bdc3c7',
   },
 });

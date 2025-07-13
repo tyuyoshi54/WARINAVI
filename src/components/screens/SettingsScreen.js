@@ -13,7 +13,8 @@ import CommonHeader from '../ui/CommonHeader';
 
 export default function SettingsScreen({ onNavigateBack, onNavigateToProfileEdit }) {
   const [notificationSettings, setNotificationSettings] = useState({
-    talkNotifications: true
+    talkNotifications: true,
+    newsNotifications: true
   });
 
   const [language, setLanguage] = useState('ja');
@@ -117,6 +118,16 @@ export default function SettingsScreen({ onNavigateBack, onNavigateToProfileEdit
             onValueChange={() => handleNotificationToggle('talkNotifications')}
             trackColor={{ false: '#e1e8ed', true: '#3498db' }}
             thumbColor={notificationSettings.talkNotifications ? '#ffffff' : '#ffffff'}
+          />
+        )}
+        {renderSettingsItem(
+          '新着情報の通知',
+          () => handleNotificationToggle('newsNotifications'),
+          <Switch
+            value={notificationSettings.newsNotifications}
+            onValueChange={() => handleNotificationToggle('newsNotifications')}
+            trackColor={{ false: '#e1e8ed', true: '#3498db' }}
+            thumbColor={notificationSettings.newsNotifications ? '#ffffff' : '#ffffff'}
           />
         )}
 
