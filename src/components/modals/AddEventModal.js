@@ -8,6 +8,7 @@ import {
   TouchableOpacity,
   FlatList,
   Alert,
+  ScrollView,
 } from 'react-native';
 
 export default function AddEventModal({ visible, onClose, onSave }) {
@@ -91,51 +92,59 @@ export default function AddEventModal({ visible, onClose, onSave }) {
     <Modal visible={visible} animationType="slide" transparent={true}>
       <View style={styles.modalOverlay}>
         <View style={styles.modalContent}>
-          <Text style={styles.modalTitle}>新しいイベントを作成</Text>
+          <ScrollView
+            showsVerticalScrollIndicator={false}
+            keyboardShouldPersistTaps="handled"
+            contentContainerStyle={styles.scrollContent}
+          >
+            <Text style={styles.modalTitle}>新しいイベントを作成</Text>
 
-          <View style={styles.inputSection}>
-            <Text style={styles.sectionTitle}>イベント名</Text>
-            <TextInput
-              style={styles.eventNameInput}
-              value={eventName}
-              onChangeText={setEventName}
-              placeholder="飲み会、バーベキューなど"
-              returnKeyType="next"
-            />
-          </View>
-
-          <View style={styles.inputSection}>
-            <Text style={styles.sectionTitle}>メンバー</Text>
-            <FlatList
-              data={members}
-              renderItem={renderMember}
-              keyExtractor={(item, index) => index.toString()}
-              style={styles.membersList}
-            />
-            
-            <View style={styles.addMemberRow}>
+            <View style={styles.inputSection}>
+              <Text style={styles.sectionTitle}>イベント名</Text>
               <TextInput
-                style={styles.newMemberInput}
-                value={newMemberName}
-                onChangeText={setNewMemberName}
-                placeholder="新しいメンバー名"
-                returnKeyType="done"
-                onSubmitEditing={addMember}
+                style={styles.eventNameInput}
+                value={eventName}
+                onChangeText={setEventName}
+                placeholder="飲み会、バーベキューなど"
+                returnKeyType="next"
               />
-              <TouchableOpacity style={styles.addMemberButton} onPress={addMember}>
-                <Text style={styles.addMemberText}>追加</Text>
+            </View>
+
+            <View style={styles.inputSection}>
+              <Text style={styles.sectionTitle}>メンバー</Text>
+              <FlatList
+                data={members}
+                renderItem={renderMember}
+                keyExtractor={(item, index) => index.toString()}
+                style={styles.membersList}
+                scrollEnabled={false}
+                nestedScrollEnabled={true}
+              />
+              
+              <View style={styles.addMemberRow}>
+                <TextInput
+                  style={styles.newMemberInput}
+                  value={newMemberName}
+                  onChangeText={setNewMemberName}
+                  placeholder="新しいメンバー名"
+                  returnKeyType="done"
+                  onSubmitEditing={addMember}
+                />
+                <TouchableOpacity style={styles.addMemberButton} onPress={addMember}>
+                  <Text style={styles.addMemberText}>追加</Text>
+                </TouchableOpacity>
+              </View>
+            </View>
+
+            <View style={styles.buttonRow}>
+              <TouchableOpacity style={styles.cancelButton} onPress={handleCancel}>
+                <Text style={styles.cancelButtonText}>キャンセル</Text>
+              </TouchableOpacity>
+              <TouchableOpacity style={styles.saveButton} onPress={handleSave}>
+                <Text style={styles.saveButtonText}>作成</Text>
               </TouchableOpacity>
             </View>
-          </View>
-
-          <View style={styles.buttonRow}>
-            <TouchableOpacity style={styles.cancelButton} onPress={handleCancel}>
-              <Text style={styles.cancelButtonText}>キャンセル</Text>
-            </TouchableOpacity>
-            <TouchableOpacity style={styles.saveButton} onPress={handleSave}>
-              <Text style={styles.saveButtonText}>作成</Text>
-            </TouchableOpacity>
-          </View>
+          </ScrollView>
         </View>
       </View>
     </Modal>
@@ -152,9 +161,15 @@ const styles = StyleSheet.create({
   modalContent: {
     backgroundColor: '#fff',
     width: '90%',
-    maxHeight: '80%',
+    maxHeight: '75%',
     borderRadius: 10,
-    padding: 20,
+    paddingHorizontal: 20,
+    paddingTop: 20,
+    paddingBottom: 10,
+  },
+  scrollContent: {
+    paddingBottom: 100,
+    flexGrow: 1,
   },
   modalTitle: {
     fontSize: 20,
@@ -178,7 +193,8 @@ const styles = StyleSheet.create({
     fontSize: 16,
   },
   membersList: {
-    maxHeight: 150,
+    maxHeight: 120,
+    flexGrow: 0,
   },
   memberRow: {
     flexDirection: 'row',
