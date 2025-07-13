@@ -11,11 +11,9 @@ import {
 } from 'react-native';
 import CommonHeader from '../ui/CommonHeader';
 
-export default function SettingsScreen({ onNavigateBack }) {
+export default function SettingsScreen({ onNavigateBack, onNavigateToProfileEdit }) {
   const [notificationSettings, setNotificationSettings] = useState({
-    discountAlerts: true,
-    newItemAlerts: true,
-    eventReminders: false
+    talkNotifications: true
   });
 
   const [language, setLanguage] = useState('ja');
@@ -40,7 +38,11 @@ export default function SettingsScreen({ onNavigateBack }) {
   };
 
   const handleProfileEdit = () => {
-    Alert.alert('プロフィール編集', 'プロフィール編集画面を開きます');
+    if (onNavigateToProfileEdit) {
+      onNavigateToProfileEdit();
+    } else {
+      Alert.alert('プロフィール編集', 'プロフィール編集画面を開きます');
+    }
   };
 
   const handlePasswordChange = () => {
@@ -108,33 +110,13 @@ export default function SettingsScreen({ onNavigateBack }) {
       <ScrollView style={styles.content} showsVerticalScrollIndicator={false}>
         {renderSectionHeader('通知設定')}
         {renderSettingsItem(
-          '割引情報の通知',
-          () => handleNotificationToggle('discountAlerts'),
+          'トークの通知',
+          () => handleNotificationToggle('talkNotifications'),
           <Switch
-            value={notificationSettings.discountAlerts}
-            onValueChange={() => handleNotificationToggle('discountAlerts')}
+            value={notificationSettings.talkNotifications}
+            onValueChange={() => handleNotificationToggle('talkNotifications')}
             trackColor={{ false: '#e1e8ed', true: '#3498db' }}
-            thumbColor={notificationSettings.discountAlerts ? '#ffffff' : '#ffffff'}
-          />
-        )}
-        {renderSettingsItem(
-          '新着情報の通知',
-          () => handleNotificationToggle('newItemAlerts'),
-          <Switch
-            value={notificationSettings.newItemAlerts}
-            onValueChange={() => handleNotificationToggle('newItemAlerts')}
-            trackColor={{ false: '#e1e8ed', true: '#3498db' }}
-            thumbColor={notificationSettings.newItemAlerts ? '#ffffff' : '#ffffff'}
-          />
-        )}
-        {renderSettingsItem(
-          'イベント通知',
-          () => handleNotificationToggle('eventReminders'),
-          <Switch
-            value={notificationSettings.eventReminders}
-            onValueChange={() => handleNotificationToggle('eventReminders')}
-            trackColor={{ false: '#e1e8ed', true: '#3498db' }}
-            thumbColor={notificationSettings.eventReminders ? '#ffffff' : '#ffffff'}
+            thumbColor={notificationSettings.talkNotifications ? '#ffffff' : '#ffffff'}
           />
         )}
 

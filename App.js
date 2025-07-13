@@ -58,6 +58,10 @@ export default function App() {
     setCurrentScreen('mypage');
   };
 
+  const handleNavigateToProfileEdit = () => {
+    setCurrentScreen('mypage');
+  };
+
   const handleBackToHome = () => {
     setCurrentScreen('home');
   };
@@ -115,6 +119,7 @@ export default function App() {
       user={user} 
       onNavigateToMyPage={handleNavigateToMyPage}
       onNavigateToPayPay={handleNavigateToPayPay}
+      onNavigateToProfileEdit={handleNavigateToProfileEdit}
     />
   );
 }

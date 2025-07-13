@@ -83,7 +83,9 @@ export default function ProfileForm({
             
             <View style={styles.infoItem}>
               <Text style={styles.infoLabel}>登録方法</Text>
-              <Text style={styles.infoValue}>LINE</Text>
+              <Text style={styles.infoValue}>
+                {user?.provider === 'apple' ? 'Apple' : user?.provider === 'line' ? 'LINE' : 'N/A'}
+              </Text>
             </View>
           </View>
         </View>

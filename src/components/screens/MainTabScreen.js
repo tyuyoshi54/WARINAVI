@@ -5,7 +5,7 @@ import TalkScreen from './TalkScreen';
 import SettingsScreen from './SettingsScreen';
 import TabBar from '../common/TabBar';
 
-export default function MainTabScreen({ user, onNavigateToMyPage, onNavigateToPayPay }) {
+export default function MainTabScreen({ user, onNavigateToMyPage, onNavigateToPayPay, onNavigateToProfileEdit }) {
   const [activeTab, setActiveTab] = useState('home');
 
   const handleTabPress = (tabKey) => {
@@ -31,7 +31,12 @@ export default function MainTabScreen({ user, onNavigateToMyPage, onNavigateToPa
       case 'talk':
         return <TalkScreen user={user} />;
       case 'settings':
-        return <SettingsScreen onNavigateBack={() => setActiveTab('home')} />;
+        return (
+          <SettingsScreen 
+            onNavigateBack={() => setActiveTab('home')}
+            onNavigateToProfileEdit={onNavigateToProfileEdit}
+          />
+        );
       default:
         return (
           <HomeScreen 
