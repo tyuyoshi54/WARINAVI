@@ -1,6 +1,7 @@
 import React from 'react';
-import { StyleSheet, Text, View, TouchableOpacity, Linking, Alert } from 'react-native';
+import { StyleSheet, Text, View, TouchableOpacity } from 'react-native';
 import { calculateSettlement } from '../../utils/settlementCalculator';
+import { showPayPaySendInfo } from '../../utils/payPayUtils';
 
 export default function SettlementResult({ members, payments, onNavigateToPayPay }) {
 
@@ -16,28 +17,11 @@ export default function SettlementResult({ members, payments, onNavigateToPayPay
     }
   };
 
-  const handlePayPayDirectPress = async (settlementItem) => {
-    const payPayAppUrl = 'paypay://';
-    const payPayWebUrl = 'https://paypay.ne.jp/app/send';
-    
-    try {
-      const canOpen = await Linking.canOpenURL(payPayAppUrl);
-      if (canOpen) {
-        await Linking.openURL(payPayAppUrl);
-        Alert.alert(
-          'PayPayアプリを開きました',
-          `送金手順:\n1. 送金画面で「送る」をタップ\n2. 受取者: ${settlementItem.to}\n3. 金額: ¥${settlementItem.amount.toLocaleString()}を入力`
-        );
-      } else {
-        await Linking.openURL(payPayWebUrl);
-        Alert.alert(
-          'PayPayアプリがインストールされていません',
-          'ブラウザでPayPayの送金ページを開きました'
-        );
-      }
-    } catch (error) {
-      Alert.alert('エラー', 'PayPayを開けませんでした');
-    }
+  const handlePayPayDirectPress = (settlementItem) => {
+    showPayPaySendInfo({
+      to: settlementItem.to,
+      amount: settlementItem.amount
+    });
   };
 
   if (settlement.totalAmount === 0) {
@@ -111,7 +95,7 @@ export default function SettlementResult({ members, payments, onNavigateToPayPay
                     style={styles.payPayDirectButton}
                     onPress={() => handlePayPayDirectPress(settlement)}
                   >
-                    <Text style={styles.payPayButtonText}>PayPay開く</Text>
+                    <Text style={styles.payPayButtonText}>PayPay情報</Text>
                   </TouchableOpacity>
                   <TouchableOpacity
                     style={styles.payPayButton}

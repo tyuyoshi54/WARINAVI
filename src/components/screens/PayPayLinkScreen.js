@@ -11,6 +11,7 @@ import {
   Share,
   ScrollView
 } from 'react-native';
+import { generatePayPayLink, validatePayPayInput, openPayPayApp } from '../../utils/payPayUtils';
 
 export default function PayPayLinkScreen({ route, navigation }) {
   const { fromUser, toUser, amount } = route.params;
@@ -24,19 +25,20 @@ export default function PayPayLinkScreen({ route, navigation }) {
     });
   }, [navigation]);
 
-  const generatePayPayLink = () => {
-    if (!payPayUsername.trim()) {
-      Alert.alert('エラー', 'PayPayのユーザー名を入力してください');
+  const handleGeneratePayPayLink = () => {
+    const validation = validatePayPayInput(payPayUsername, customAmount);
+    
+    if (!validation.isValid) {
+      Alert.alert('エラー', validation.errors.join('\n'));
       return;
     }
 
-    if (!customAmount || isNaN(customAmount) || Number(customAmount) <= 0) {
-      Alert.alert('エラー', '正しい金額を入力してください');
-      return;
+    try {
+      const link = generatePayPayLink(payPayUsername, Number(customAmount));
+      setGeneratedLink(link);
+    } catch (error) {
+      Alert.alert('エラー', error.message);
     }
-
-    const link = `https://paypay.me/${payPayUsername.trim()}?amount=${customAmount}`;
-    setGeneratedLink(link);
   };
 
   const copyToClipboard = async () => {
@@ -50,28 +52,11 @@ export default function PayPayLinkScreen({ route, navigation }) {
     }
   };
 
-  const openPayPayApp = async () => {
-    const payPayAppUrl = 'paypay://';
-    const payPayWebUrl = 'https://paypay.ne.jp/app/send';
-    
-    try {
-      const canOpen = await Linking.canOpenURL(payPayAppUrl);
-      if (canOpen) {
-        await Linking.openURL(payPayAppUrl);
-        Alert.alert(
-          'PayPayアプリを開きました',
-          `送金手順:\n1. 送金画面で「送る」をタップ\n2. 受取者: ${toUser}\n3. 金額: ¥${Number(customAmount).toLocaleString()}を入力`
-        );
-      } else {
-        await Linking.openURL(payPayWebUrl);
-        Alert.alert(
-          'PayPayアプリがインストールされていません',
-          'ブラウザでPayPayの送金ページを開きました\nアプリをインストールしてご利用ください'
-        );
-      }
-    } catch (error) {
-      Alert.alert('エラー', 'PayPayを開けませんでした');
-    }
+  const handleOpenPayPayApp = () => {
+    openPayPayApp({
+      to: toUser,
+      amount: Number(customAmount)
+    });
   };
 
   const openPayPayLink = () => {
@@ -141,14 +126,14 @@ export default function PayPayLinkScreen({ route, navigation }) {
 
         <TouchableOpacity
           style={[styles.generateButton, styles.payPayDirectButton]}
-          onPress={openPayPayApp}
+          onPress={handleOpenPayPayApp}
         >
           <Text style={styles.generateButtonText}>PayPayアプリで直接送金</Text>
         </TouchableOpacity>
 
         <TouchableOpacity
           style={styles.generateButton}
-          onPress={generatePayPayLink}
+          onPress={handleGeneratePayPayLink}
         >
           <Text style={styles.generateButtonText}>PayPayリンクを生成</Text>
         </TouchableOpacity>
