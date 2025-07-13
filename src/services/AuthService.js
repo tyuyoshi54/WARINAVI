@@ -110,6 +110,19 @@ class AuthService {
     }
   }
 
+  async markProfileAsCompleted() {
+    try {
+      const userData = await this.getUserData();
+      if (userData) {
+        userData.profileCompleted = true;
+        await this.saveUserData(userData);
+      }
+    } catch (error) {
+      console.error('プロフィール完了状態設定エラー:', error);
+      throw error;
+    }
+  }
+
   async logout() {
     try {
       await AsyncStorage.removeItem('user_data');
